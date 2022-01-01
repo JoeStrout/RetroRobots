@@ -64,6 +64,11 @@ Player.update = function(dt=0.0167)
 			self.frameNum = (self.frameNum + 1) % images.playerTapping.len
 			self.image = images.playerTapping[self.frameNum]
 			self.nextFrameTime = time + 0.25
+			if idleTime > 20 then
+				self.image = images.playerStanding
+				self.scale = [-self.scale[0], 1]
+				self.idleSince = time - 5
+			end if
 		end if
 	else
 		// moving
