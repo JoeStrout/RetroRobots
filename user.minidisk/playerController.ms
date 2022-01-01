@@ -20,11 +20,13 @@ Player.frameNum = 0
 Player.nextFrameTime = 0
 Player.aim = [1,0]		// dx,dy of aim direction
 Player.tint = "#FFFFCC"	// (use #CCCCFF for player 2)
+Player.idleSince = 0
 
 Player.update = function(dt=0.0167)
 	h = self.inputs.horizontal
 	v = self.inputs.vertical
 	if self.inputs.fire then
+		// shooting
 		dx = self.aim[0]; dy = self.aim[1]
 		if h or v then
 			dx = (h > 0) - (h < 0)
@@ -51,9 +53,20 @@ Player.update = function(dt=0.0167)
 				self.image = images.playerAimSE
 			end if
 		end if
+		self.idleSince = time
 	else if h == 0 and v == 0 then
-		self.image = images.playerStanding
+		// standing around (idle)
+		idleTime = time - self.idleSince
+		if idleTime < 10 then
+			self.image = images.playerStanding
+			self.frameNum = 0
+		else if time > self.nextFrameTime then
+			self.frameNum = (self.frameNum + 1) % images.playerTapping.len
+			self.image = images.playerTapping[self.frameNum]
+			self.nextFrameTime = time + 0.25
+		end if
 	else
+		// moving
 		if h > 0 then
 			self.scale = [1,1]
 		else if h < 0 then
@@ -66,6 +79,7 @@ Player.update = function(dt=0.0167)
 		end if
 		self.x = self.x + h * 150 * dt
 		self.y = self.y + v * 150 * dt
+		self.idleSince = time
 	end if
 end function
 

@@ -5,7 +5,7 @@
 
 import "listUtil"
 
-debug = true
+debug = false
 
 // Symmetry types (how second painter moves relative to the first)
 kInvertNone = 0
@@ -98,7 +98,7 @@ end function
 // in the corresponding direction (according to our symmetry),
 // knocking out the walls as we go.
 move = function(dir)
-	print "Moving painter 0 " + dir.str + ", and painter 1 " + dir.other(symmetry).str
+	if debug then print "Moving painter 0 " + dir.str + ", and painter 1 " + dir.other(symmetry).str
 	moveOnePainter 0, dir
 	moveOnePainter 1, dir.other(symmetry)
 end function
@@ -231,6 +231,7 @@ end function
 // Report whether the indicated wall should be in the maze.
 // Call this after calling generate.
 shouldHaveWall = function(col, row, horizontal)
+	if col >= kCols or row >= kRows then return true
 	return wall[col][row][horizontal]
 end function
 
