@@ -1,6 +1,8 @@
 // Manages room appearance and sounds.
 
 import "mazeGenerator"
+if not globals.hasIndex("mathUtil") then import "mathUtil"
+if not globals.hasIndex("listUtil") then import "listUtil"
 
 wallDisplayNum = 4
 
@@ -78,6 +80,33 @@ Room.newVerticalWall = function(col, row)
 	return wall
 end function
 
+Room.isOutOfBounds = function(xyPos)
+	return xyPos.x < self.x or xyPos.x > self.x + kWidth or
+	  xyPos.y < self.y or xyPos.y > self.y + kHeight
+end function
+
+Room.shift = function(dx, dy)
+	self.x = self.x + dx
+	self.y = self.y + dy
+	for wall in self.walls
+		wall.x = wall.x + dx
+		wall.y = wall.y + dy
+	end for
+end function
+
+Room.moveTowards = function(targetX, targetY, maxShift=10)
+	newX = mathUtil.moveTowards(self.x, targetX, maxShift)
+	newY = mathUtil.moveTowards(self.y, targetY, maxShift)
+	delta = {"x":newX - self.x, "y":newY - self.y};
+	self.shift delta.x, delta.y
+	return delta
+end function
+
+Room.close = function
+	for wall in self.walls
+		display(wallDisplayNum).sprites.removeVal wall
+	end for
+end function
 
 if locals == globals then
 	display(wallDisplayNum).clear
