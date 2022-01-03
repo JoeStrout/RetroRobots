@@ -30,6 +30,7 @@ botWalkDown.push spriteSheet.getImage(48*1,90, 48,48)
 botWalkUp = []
 botWalkUp.push spriteSheet.getImage(48*2,90, 48,48)
 botWalkUp.push spriteSheet.getImage(48*3,90, 48,48)
+botFaceRight = spriteSheet.getImage(48*4,90, 48,48)
 botWalkRight = []
-botWalkRight.push spriteSheet.getImage(48*4,90, 48,48)
 botWalkRight.push spriteSheet.getImage(48*5,90, 48,48)
+botWalkRight.push spriteSheet.getImage(48*6,90, 48,48)
