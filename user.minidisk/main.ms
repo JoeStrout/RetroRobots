@@ -5,6 +5,7 @@ clear
 import "images"
 import "roomManager"
 import "playerController"
+import "shotController"
 import "inputs"
 import "mathUtil"
 
@@ -47,7 +48,12 @@ end function
 
 while true
 	yield
-	player.update
+	for sp in display(4).sprites
+		if sp == player or sp isa shotController.Shot then
+			// ToDo: make a common base class or list of updateable sprites
+			sp.update
+		end if
+	end for
 	if curRoom.isOutOfBounds(player) then
 		moveToNextRoom player
 	end if

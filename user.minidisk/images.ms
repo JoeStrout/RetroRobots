@@ -34,3 +34,5 @@ botFaceRight = spriteSheet.getImage(48*4,90, 48,48)
 botWalkRight = []
 botWalkRight.push spriteSheet.getImage(48*5,90, 48,48)
 botWalkRight.push spriteSheet.getImage(48*6,90, 48,48)
+
+shot = Image.create(32,8, color.white)
