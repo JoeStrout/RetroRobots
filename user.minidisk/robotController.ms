@@ -1,13 +1,15 @@
 // Controller for each of the evil robots.
 
-import "mathUtil"
-if locals == globals then
-	import "images"
-end if
+if not globals.hasIndex("mathUtil") then import "mathUtil"
+if not globals.hasIndex("listUtil") then import "listUtil"
+if not globals.hasIndex("images") then import "images"
+if not globals.hasIndex("updatable") then import "updatable"
+
+robotDisplayNum = 4
 
 levelColors = ["#7FFF7F","#6666FF","#CCCC33","#990000","#990000"]
 
-Robot = new Sprite
+Robot = new UpdatableSprite
 Robot.walkSpeed = 64
 Robot.level = 0
 Robot.isArmored = false
@@ -21,10 +23,17 @@ Robot.frameRate = 16		// frames per second
 
 Robot.make = function(level=0)
 	noob = new Robot
+	noob.init
 	noob.level = level
 	noob.tint = levelColors[level]
 	noob.nextActionTime = time + mathUtil.randRange(1.5, 5)
+	display(robotDisplayNum).sprites.push noob
 	return noob
+end function
+
+Robot.die = function
+	super.die
+	display(robotDisplayNum).sprites.removeVal self
 end function
 
 Robot.update = function(dt=0.0167)
@@ -73,7 +82,9 @@ Robot.startWalk = function
 			if dist < bestDistToPlayer then
 				// This looks like a good direction...
 				// but does it hit a wall?
-				hitsWall = false		// ToDo
+				hitsWall = curRoom.lineSegmentHitsWall(self,
+					[self.x + dx*200, self.y + dy*200])
+				hitsWall = false  // HACK!
 				if not hitsWall then
 					bestDx = dx
 					bestDy = dy
@@ -83,7 +94,6 @@ Robot.startWalk = function
 		end for
 	end for
 	
-	print "Best direction: " + bestDx + "," + bestDy
 	if not bestDx and not bestDy then return // couldn't find ANY direction to walk
 	
 	self.walkDirection = {"x":bestDx, "y":bestDy}
@@ -104,14 +114,41 @@ Robot.startWalk = function
 end function
 
 Robot.continueWalk = function(dt)
-	self.x = self.x + self.walkDirection.x * self.walkSpeed * dt
-	self.y = self.y + self.walkDirection.y * self.walkSpeed * dt
-
+	// First, check to see if we need to keep walking...
+	// stop when we would go past the player
+	player = self.closestPlayer
+	walkDir = self.walkDirection
+	stop = false
+	if walkDir.x < 0 and self.x <= player.x then stop = true
+	if walkDir.y < 0 and self.y <= player.y then stop = true
+	if walkDir.x > 0 and self.x >= player.x then stop = true
+	if walkDir.y > 0 and self.y >= player.y then stop = true
+	
+	// Also stop when we're about to hit a wall
+	if curRoom.lineSegmentHitsWall(self, 
+		[self.x + walkDir.x * 50, self.y + walkDir.y * 50]) then stop = true
+	
+	if stop then
+		self.walking = false
+		if self.level < 2 then
+			self.nextActionTime = time + mathUtil.randRange(0.25, 2)
+		else
+			self.nextActionTime = time + mathUtil.randRange(0.1, 1)
+		end if
+		self.animFrames = images.botIdle
+		self.frameRate = 16
+	else
+		self.x = self.x + walkDir.x * self.walkSpeed * dt
+		self.y = self.y + walkDir.y * self.walkSpeed * dt
+		// ToDo: check for collisions
+	end if
+	
 end function
 
 Robot.closestPlayer = function
 	// Return the closest player on the screen.
 	// HACK for now:
+	if globals.hasIndex("player") then return player
 	return mouse
 end function
 
@@ -120,7 +157,6 @@ if locals == globals then
 	bot = Robot.make(1)
 	bot.x = 480
 	bot.y = 320
-	display(4).sprites.push bot
 	while true
 		yield
 		bot.update

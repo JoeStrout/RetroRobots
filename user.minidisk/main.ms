@@ -3,16 +3,19 @@
 clear
 
 import "images"
+import "updatable"
 import "roomManager"
 import "playerController"
 import "shotController"
 import "inputs"
 import "mathUtil"
 
+
 curRoom = new roomManager.Room
 curRoom.createWalls
 
 player = new playerController.Player
+player.init
 player.x = 480
 player.y = 320
 player.inputs = inputs.inputsForPlayer(0)
@@ -35,6 +38,7 @@ moveToNextRoom = function(playerPos)
 	nextRoom.x = curRoom.x - roomManager.kWidth * dirX
 	nextRoom.y = curRoom.y - roomManager.kHeight * dirY
 	nextRoom.createWalls
+	nextRoom.createRobots
 	while curRoom.x != targetX or curRoom.y != targetY
 		delta = curRoom.moveTowards(targetX, targetY)
 		nextRoom.shift delta.x, delta.y
@@ -48,12 +52,7 @@ end function
 
 while true
 	yield
-	for sp in display(4).sprites
-		if sp == player or sp isa shotController.Shot then
-			// ToDo: make a common base class or list of updateable sprites
-			sp.update
-		end if
-	end for
+	updatable.update
 	if curRoom.isOutOfBounds(player) then
 		moveToNextRoom player
 	end if

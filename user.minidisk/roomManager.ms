@@ -3,6 +3,7 @@
 import "mazeGenerator"
 if not globals.hasIndex("mathUtil") then import "mathUtil"
 if not globals.hasIndex("listUtil") then import "listUtil"
+if not globals.hasIndex("robotController") then import "robotController"
 
 wallDisplayNum = 4
 
@@ -14,6 +15,9 @@ kWallThickness = 16
 
 Wall = new Sprite
 Wall.image = file.loadImage("/sys/pics/shapes/Square.png")
+Wall.localBounds = new Bounds
+Wall.localBounds.width = Wall.image.width
+Wall.localBounds.height = Wall.image.height
 
 Room = {}
 Room.x = 0
@@ -21,6 +25,7 @@ Room.y = 0
 
 Room.createWalls = function
 	self.walls = []
+	self.robots = []
 	mazeGenerator.generate
 	
 	// Create the vertical walls
@@ -80,9 +85,50 @@ Room.newVerticalWall = function(col, row)
 	return wall
 end function
 
+Room.createRobots = function(botLevel=0)
+	self.robots = []
+	// Start by making a list of all the sub-rooms, then shuffling that list.
+	subrooms = []
+	for col in range(0, mazeGenerator.kCols-1)
+		for row in range(0, mazeGenerator.kRows-1)
+			subrooms.push [col,row]
+		end for
+	end for
+	subrooms.shuffle
+	
+	// Then, pick a reasonable number of bots, and place each one in
+	// a subroom drawn from the list.
+	qtyBots = floor(rnd*5 + 5)
+	w = kWidth / mazeGenerator.kCols
+	h = kHeight / mazeGenerator.kRows
+	for i in range(0, qtyBots-1)
+		colRow = subrooms[i % subrooms.len]
+		col = colRow[0]; row = colRow[1]
+		x = w * (col + 0.5) + w * mathUtil.randRange(-0.35, 0.35)
+		y = h * (row + 0.5) + h * mathUtil.randRange(-0.3, 0.3)
+		bot = robotController.Robot.make(botLevel)
+		bot.x = self.x + round(x); bot.y = self.y + round(y)
+		self.robots.push bot
+	end for
+end function
+
 Room.isOutOfBounds = function(xyPos)
 	return xyPos.x < self.x or xyPos.x > self.x + kWidth or
 	  xyPos.y < self.y or xyPos.y > self.y + kHeight
+end function
+
+Room.lineSegmentHitsWall = function(endA, endB)
+	for wall in self.walls
+		if wall.worldBounds.overlapsLineSegment(endA, endB) then return true
+	end for
+	return false
+end function
+
+Room.botHitByLineSegment = function(endA, endB)
+	for bot in self.robots
+		if bot.worldBounds.overlapsLineSegment(endA, endB) then return bot
+	end for
+	return null
 end function
 
 Room.shift = function(dx, dy)
@@ -91,6 +137,10 @@ Room.shift = function(dx, dy)
 	for wall in self.walls
 		wall.x = wall.x + dx
 		wall.y = wall.y + dy
+	end for
+	for bot in self.robots
+		bot.x = bot.x + dx
+		bot.y = bot.y + dy
 	end for
 end function
 
@@ -106,10 +156,16 @@ Room.close = function
 	for wall in self.walls
 		display(wallDisplayNum).sprites.removeVal wall
 	end for
+	self.walls = []
+	for bot in self.robots
+		bot.die
+	end for
+	self.robots = []
 end function
 
 if locals == globals then
 	display(wallDisplayNum).clear
 	r = new Room
 	r.createWalls
+	r.createRobots
 end if

@@ -6,9 +6,10 @@ if locals == globals then
 	import "images"
 	import "inputs"
 	import "shotController"
+	import "updatable"
 end if
 
-Player = new Sprite
+Player = new UpdatableSprite
 Player.livesLeft = 2
 Player.powerShot = false
 Player.tripleShot = false
@@ -104,6 +105,7 @@ Player.fire = function
 	self.lastShotTime = time
 	
 	shot = new shotController.Shot
+	shot.init
 	shot.x = self.x + self.aimOffset[0]
 	shot.y = self.y + self.aimOffset[1]
 	shot.rotation = atan(self.aim[1], self.aim[0]) * 180/pi

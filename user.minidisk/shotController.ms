@@ -2,11 +2,10 @@
 
 import "listUtil"
 import "mathUtil"
-if locals == globals then
-	import "images"
-end if
+if not globals.hasIndex("images") then import "images"
+if not globals.hasIndex("updatable") then import "updatable"
 
-Shot = new Sprite
+Shot = new UpdatableSprite
 Shot.image = images.shot
 Shot.dx = null	// set on first update, based on rotation
 Shot.dy = null
@@ -21,15 +20,22 @@ Shot.update = function(dt=0.0167)
 	
 	// remember old tail position (for collision detection)
 	halfLen = self.image.width / 2
-	oldTailX = self.x - halfLen * self.dx
-	oldTailY = self.y + halfLen * self.dy
+	oldTail = {}
+	oldTail.x = self.x - halfLen * self.dx
+	oldTail.y = self.y - halfLen * self.dy
 	
 	// move forward
 	self.x = self.x + self.speed * self.dx * dt
 	self.y = self.y + self.speed * self.dy * dt
 	
 	// check whether we've hit something
-	// ToDo!
+	newHead = {}
+	newHead.x = self.x + halfLen * self.dx
+	newHead.y = self.y + halfLen * self.dy
+	if curRoom != null and curRoom.lineSegmentHitsWall(oldTail, newHead) then
+		self.die
+		return
+	end if
 	
 	// check whether we're out of bounds
 	if self.x < -40 or self.x > 1000 or self.y < -40 or self.y > 680 then
@@ -38,10 +44,13 @@ Shot.update = function(dt=0.0167)
 end function
 
 Shot.die = function
+	super.die
 	display(4).sprites.removeVal self
 end function
 
 if locals == globals then
+	curRoom = null
+	
 	sh = new Shot
 	sh.x = 200
 	sh.y = 100
