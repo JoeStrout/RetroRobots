@@ -20,6 +20,10 @@ Robot.curFrame = 0
 Robot.nextFrameTime = 0
 Robot.nextActionTime = 0
 Robot.frameRate = 16		// frames per second
+Robot.isDead = false
+Robot.localBounds = new Bounds
+Robot.localBounds.width = 25
+Robot.localBounds.height = 38
 
 Robot.make = function(level=0)
 	noob = new Robot
@@ -34,14 +38,21 @@ end function
 Robot.die = function
 	super.die
 	display(robotDisplayNum).sprites.removeVal self
+	curRoom.robots.removeVal self
 end function
 
 Robot.update = function(dt=0.0167)
 	if time > self.nextFrameTime then
+		if self.isDead and self.curFrame == self.animFrames.len-1 then
+			self.die
+			return
+		end if
 		self.curFrame = (self.curFrame + 1) % self.animFrames.len
 		self.image = self.animFrames[self.curFrame]
 		self.nextFrameTime = time + 1/self.frameRate
 	end if
+	
+	if self.isDead then return
 	
 	if self.walking then self.continueWalk dt
 	if time > self.nextActionTime and (not self.walking or self.level > 1) then
@@ -63,6 +74,15 @@ end function
 Robot.fire = function
 	// Show in the player's general direction
 	print "Pew!"
+end function
+
+Robot.explode = function
+	if self.isDead then return
+	self.isDead = true
+	self.animFrames = images.botBoom
+	self.curFrame = -1
+	self.frameRate = 16
+	self.nextFrameTime = time
 end function
 
 Robot.startWalk = function

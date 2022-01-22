@@ -157,9 +157,11 @@ Room.close = function
 		display(wallDisplayNum).sprites.removeVal wall
 	end for
 	self.walls = []
-	for bot in self.robots
-		bot.die
-	end for
+	if self.robots then
+		for i in range(self.robots.len - 1)
+			self.robots[i].die
+		end for
+	end if
 	self.robots = []
 end function
 

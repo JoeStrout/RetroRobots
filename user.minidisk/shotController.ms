@@ -32,11 +32,18 @@ Shot.update = function(dt=0.0167)
 	newHead = {}
 	newHead.x = self.x + halfLen * self.dx
 	newHead.y = self.y + halfLen * self.dy
-	if curRoom != null and curRoom.lineSegmentHitsWall(oldTail, newHead) then
-		self.die
-		return
+	if curRoom != null then
+		if curRoom.lineSegmentHitsWall(oldTail, newHead) then
+			self.die
+			return
+		end if
+		bot = curRoom.botHitByLineSegment(oldTail, newHead)
+		if bot then
+			bot.explode
+			self.die	// ToDo: unless powershot!
+		end if
 	end if
-	
+		
 	// check whether we're out of bounds
 	if self.x < -40 or self.x > 1000 or self.y < -40 or self.y > 680 then
 		self.die
