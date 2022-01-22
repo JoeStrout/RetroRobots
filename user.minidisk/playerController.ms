@@ -111,7 +111,7 @@ Player.fire = function
 	shot.y = self.y + self.aimOffset[1]
 	shot.rotation = atan(self.aim[1], self.aim[0]) * 180/pi
 	shot.tint = self.tint
-	display(4).sprites.push shot
+	displays.action.sprites.push shot
 end function
 
 if locals == globals then
@@ -120,10 +120,10 @@ if locals == globals then
 	p.x = 480
 	p.y = 320
 	p.inputs = inputs.inputsForPlayer(0)
-	display(4).sprites.push p
+	displays.action.sprites.push p
 	while true
 		yield
-		for sp in display(4).sprites
+		for sp in displays.action.sprites
 			sp.update
 		end for
 	end while

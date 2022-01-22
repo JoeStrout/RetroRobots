@@ -1,7 +1,7 @@
 // Main program for the Retro Robots game.
 
-clear
 
+import "displays"; displays.init
 import "images"
 import "updatable"
 import "roomManager"
@@ -19,7 +19,7 @@ player.init
 player.x = 480
 player.y = 320
 player.inputs = inputs.inputsForPlayer(0)
-display(4).sprites.push player
+displays.action.sprites.push player
 
 moveToNextRoom = function(playerPos)
 	dirX = 0; dirY = 0	// direction we are shifting
@@ -44,6 +44,7 @@ moveToNextRoom = function(playerPos)
 		nextRoom.shift delta.x, delta.y
 		player.x = player.x + delta.x
 		player.y = player.y + delta.y
+		displays.shiftFloor delta.x, delta.y
 		yield
 	end while
 	curRoom.close

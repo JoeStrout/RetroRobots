@@ -55,6 +55,6 @@ if locals == globals then
 	bot.localBounds.height = 38
 	bot.x = 480
 	bot.y = 320
-	display(4).sprites.push bot
+	displays.action.sprites.push bot
 	gfx.drawPoly bot.worldBounds.corners, color.yellow
 end if

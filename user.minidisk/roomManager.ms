@@ -1,11 +1,10 @@
 // Manages room appearance and sounds.
 
 import "mazeGenerator"
+if not globals.hasIndex("displays") then import "displays"
 if not globals.hasIndex("mathUtil") then import "mathUtil"
 if not globals.hasIndex("listUtil") then import "listUtil"
 if not globals.hasIndex("robotController") then import "robotController"
-
-wallDisplayNum = 4
 
 kScorebarHeight = 32
 kWidth = 960
@@ -70,7 +69,7 @@ Room.newHorizontalWall = function(col, row)
 	wall.scale = [w / wall.image.width, h / wall.image.height]
 	wall.x = self.x + (col + 0.5) * kWidth / mazeGenerator.kCols
 	wall.y = self.y + row * kHeight / mazeGenerator.kRows
-	display(wallDisplayNum).sprites.push wall
+	displays.wall.sprites.push wall
 	return wall
 end function
 
@@ -81,7 +80,7 @@ Room.newVerticalWall = function(col, row)
 	wall.scale = [w / wall.image.width, h / wall.image.height]
 	wall.x = self.x + col * kWidth / mazeGenerator.kCols
 	wall.y = self.y + (row + 0.5) * kHeight / mazeGenerator.kRows
-	display(wallDisplayNum).sprites.push wall
+	displays.wall.sprites.push wall
 	return wall
 end function
 
@@ -154,7 +153,7 @@ end function
 
 Room.close = function
 	for wall in self.walls
-		display(wallDisplayNum).sprites.removeVal wall
+		displays.wall.sprites.removeVal wall
 	end for
 	self.walls = []
 	if self.robots then

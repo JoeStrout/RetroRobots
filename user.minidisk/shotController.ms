@@ -2,6 +2,7 @@
 
 import "listUtil"
 import "mathUtil"
+if not globals.hasIndex("displays") then import "displays"
 if not globals.hasIndex("images") then import "images"
 if not globals.hasIndex("updatable") then import "updatable"
 
@@ -52,7 +53,7 @@ end function
 
 Shot.die = function
 	super.die
-	display(4).sprites.removeVal self
+	displays.action.sprites.removeVal self
 end function
 
 if locals == globals then
@@ -62,8 +63,8 @@ if locals == globals then
 	sh.x = 200
 	sh.y = 100
 	sh.rotation = 30
-	display(4).sprites.push sh
-	while display(4).sprites.indexOf(sh) != null
+	displays.action.sprites.push sh
+	while displays.action.sprites.indexOf(sh) != null
 		sh.update
 		yield
 	end while
