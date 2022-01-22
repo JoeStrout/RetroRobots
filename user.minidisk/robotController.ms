@@ -160,7 +160,19 @@ Robot.continueWalk = function(dt)
 	else
 		self.x = self.x + walkDir.x * self.walkSpeed * dt
 		self.y = self.y + walkDir.y * self.walkSpeed * dt
-		// ToDo: check for collisions
+		
+		// Check for collisions
+		for sp in curRoom.robots + curRoom.walls
+			if sp == self then continue
+			if sp.overlaps(self) then
+				if sp isa Robot then
+					if sp.isDead then continue
+					sp.explode
+				end if
+				self.explode
+				return
+			end if
+		end for
 	end if
 	
 end function

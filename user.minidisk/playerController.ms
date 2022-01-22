@@ -48,15 +48,15 @@ Player.update = function(dt=0.0167)
 		else if dy > 0 then
 			if dx == 0 then
 				self.image = images.playerAimN
-				self.aimOffset = [11, 25]
+				self.aimOffset = [9, 40]
 			else
 				self.image = images.playerAimNE
-				self.aimOffset = [17, 20]
+				self.aimOffset = [25, 30]
 			end if
 		else
 			if dx == 0 then
 				self.image = images.playerAimS
-				self.aimOffset = [0, 0]
+				self.aimOffset = [0, -10]
 			else
 				self.image = images.playerAimSE
 				self.aimOffset = [14, -5]
@@ -83,6 +83,7 @@ Player.update = function(dt=0.0167)
 		end if
 	else
 		// moving
+		self.aim = [(h > 0) - (h < 0), (v > 0) - (v < 0)]
 		if h > 0 then
 			self.scale = [1,1]
 		else if h < 0 then
