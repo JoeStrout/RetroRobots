@@ -106,7 +106,7 @@ Player.fire = function
 	self.lastShotTime = time
 	
 	shot = new shotController.Shot
-	shot.init
+	shot.init self
 	shot.x = self.x + self.aimOffset[0]
 	shot.y = self.y + self.aimOffset[1]
 	shot.rotation = atan(self.aim[1], self.aim[0]) * 180/pi

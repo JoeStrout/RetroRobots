@@ -7,7 +7,7 @@ if not globals.hasIndex("updatable") then import "updatable"
 
 robotDisplayNum = 4
 
-levelColors = ["#7FFF7F","#6666FF","#CCCC33","#990000","#990000"]
+levelColors = ["#7FFF7F","#88AAFF","#CCCC33","#990000","#990000"]
 
 Robot = new UpdatableSprite
 Robot.walkSpeed = 64
@@ -72,8 +72,19 @@ Robot.act = function
 end function
 
 Robot.fire = function
-	// Show in the player's general direction
-	print "Pew!"
+	// Shoot in the player's general direction
+	player = self.closestPlayer
+	angle = atan(player.y - self.y, player.x - self.x) * 180/pi
+	angle = round(angle / 45) * 45
+	
+	shot = new shotController.Shot
+	shot.init self
+	shot.x = self.x + cos(angle * pi/180) * 20
+	shot.y = self.y + sin(angle * pi/180) * 20
+	shot.rotation = angle
+	shot.tint = self.tint
+	if self.level > 2 then shot.speed = 1000 else shot.speed = 400
+	displays.action.sprites.push shot
 end function
 
 Robot.explode = function

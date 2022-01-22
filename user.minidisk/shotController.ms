@@ -11,6 +11,14 @@ Shot.image = images.shot
 Shot.dx = null	// set on first update, based on rotation
 Shot.dy = null
 Shot.speed = 1000			// (pixels/sec)
+Shot.ignore = null			// sprite to NOT hit
+
+Shot.init = function(shooter)
+	super.init
+	self.ignore = shooter
+	self.x = shooter.x
+	self.y = shooter.y
+end function
 
 Shot.update = function(dt=0.0167)
 	if self.dx == null then
@@ -39,7 +47,7 @@ Shot.update = function(dt=0.0167)
 			return
 		end if
 		bot = curRoom.botHitByLineSegment(oldTail, newHead)
-		if bot then
+		if bot and bot != self.ignore then
 			bot.explode
 			self.die	// ToDo: unless powershot!
 		end if

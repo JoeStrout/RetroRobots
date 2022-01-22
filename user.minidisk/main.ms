@@ -38,7 +38,7 @@ moveToNextRoom = function(playerPos)
 	nextRoom.x = curRoom.x - roomManager.kWidth * dirX
 	nextRoom.y = curRoom.y - roomManager.kHeight * dirY
 	nextRoom.createWalls
-	nextRoom.createRobots
+	nextRoom.createRobots 1
 	while curRoom.x != targetX or curRoom.y != targetY
 		delta = curRoom.moveTowards(targetX, targetY)
 		nextRoom.shift delta.x, delta.y
