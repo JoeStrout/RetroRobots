@@ -189,10 +189,16 @@ Robot.continueWalk = function(dt)
 end function
 
 Robot.closestPlayer = function
-	// Return the closest player on the screen.
-	// HACK for now:
-	if globals.hasIndex("player") then return player
-	return mouse
+	// Return the closest non-disabled player on the screen.
+	if not globals.hasIndex("players") then return mouse	// TEST HACK
+	result = null
+	for p in players
+		if p.disabled then continue
+		if not result or mathUtil.distance(p, self) < mathUtil.distance(result, self) then
+			result = p
+		end if
+	end for
+	return result
 end function
 
 if locals == globals then

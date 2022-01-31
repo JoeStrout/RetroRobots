@@ -10,6 +10,7 @@ if locals == globals then
 end if
 
 Player = new UpdatableSprite
+Player.playerNum = 0		// 0 or 1
 Player.livesLeft = 2
 Player.powerShot = false
 Player.tripleShot = false
@@ -25,8 +26,19 @@ Player.aimOffset = [0,0]	// where bullets appear relative to our position
 Player.tint = "#FFFFCC"	// (use #CCCCFF for player 2)
 Player.idleSince = 0
 Player.lastShotTime = 0
+Player.disabled = false	// (disabled when they leave the room)
+
+Player.instances = []
+
+Player.init = function(playerTwo)
+	super.init
+	self.playerNum = playerTwo
+	if playerTwo then self.tint = "#CCCCFF"
+	Player.instances.push self
+end function
 
 Player.update = function(dt=0.0167)
+	if self.disabled then return
 	h = self.inputs.horizontal
 	v = self.inputs.vertical
 	if self.inputs.fire then

@@ -111,9 +111,13 @@ Room.createRobots = function(botLevel=0)
 	end for
 end function
 
-Room.isOutOfBounds = function(xyPos)
-	return xyPos.x < self.x or xyPos.x > self.x + kWidth or
-	  xyPos.y < self.y or xyPos.y > self.y + kHeight
+Room.isOutOfBounds = function(xyPos, extraFar=false)
+	extraX = 20 * extraFar
+	extraY = 40 * extraFar
+	return xyPos.x < self.x - extraX or
+		   xyPos.x > self.x + kWidth + extraX or
+		   xyPos.y < self.y - extraY or
+		   xyPos.y > self.y + kHeight + extraY
 end function
 
 Room.lineSegmentHitsWall = function(endA, endB)
