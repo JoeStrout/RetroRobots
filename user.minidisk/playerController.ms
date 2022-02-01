@@ -27,6 +27,10 @@ Player.tint = "#FFFFCC"	// (use #CCCCFF for player 2)
 Player.idleSince = 0
 Player.lastShotTime = 0
 Player.disabled = false	// (disabled when they leave the room)
+Player.dying = false
+Player.localBounds = new Bounds
+Player.localBounds.width = 20
+Player.localBounds.height = 40
 
 Player.instances = []
 
@@ -38,6 +42,7 @@ Player.init = function(playerTwo)
 end function
 
 Player.update = function(dt=0.0167)
+	if self.dying then self.doDeathAnimation dt
 	if self.disabled then return
 	h = self.inputs.horizontal
 	v = self.inputs.vertical
@@ -109,6 +114,7 @@ Player.update = function(dt=0.0167)
 		self.x = self.x + h * 150 * dt
 		self.y = self.y + v * 150 * dt
 		self.idleSince = time
+		self.checkCollisions
 	end if
 end function
 
@@ -124,6 +130,41 @@ Player.fire = function
 	shot.rotation = atan(self.aim[1], self.aim[0]) * 180/pi
 	shot.tint = self.tint
 	displays.action.sprites.push shot
+end function
+
+Player.checkCollisions = function
+	for sp in curRoom.robots + curRoom.walls
+		if sp.overlaps(self) then
+			if sp isa robotController.Robot then
+				if sp.isDead then continue
+				sp.explode
+			end if
+			self.die
+			return
+		end if
+	end for
+end function
+
+Player.die = function
+	if self.dying then return // too late, already dying
+	self.dying = true
+	self.disabled = true
+	self.powerShot = false
+	self.tripleShot = false
+	self.hasShield = false
+	self.dieTimeLeft = 2
+	self.deathPosition = [self.x, self.y]
+end function
+
+Player.doDeathAnimation = function(dt)
+	self.x = self.deathPosition[0] + mathUtil.randRange(-5, 5)
+	self.y = self.deathPosition[1] + mathUtil.randRange(-5, 5)
+	self.dieTimeLeft = self.dieTimeLeft - dt
+	if self.dieTimeLeft < 0 then
+		// ToDo: respawn etc. properly
+		self.dying = false
+		self.disabled = false
+	end if
 end function
 
 if locals == globals then

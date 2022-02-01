@@ -4,6 +4,7 @@
 import "displays"; displays.init
 import "images"
 import "updatable"
+import "robotController"
 import "roomManager"
 import "playerController"
 import "shotController"
