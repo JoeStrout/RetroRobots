@@ -2,6 +2,7 @@
 
 spriteSheet = file.loadImage("/usr/pics/spriteTexMap.png")
 playerStanding = spriteSheet.getImage(0,192, 32,64)
+playerLifeIcon = spriteSheet.getImage(0,192+32, 32,32)
 playerHit = []
 playerHit.push spriteSheet.getImage(32*1,192, 32,64)
 playerHit.push spriteSheet.getImage(32*2,192, 32,64)

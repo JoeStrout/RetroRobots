@@ -74,6 +74,7 @@ end function
 Robot.fire = function
 	// Shoot in the player's general direction
 	player = self.closestPlayer
+	if not player then return
 	angle = atan(player.y - self.y, player.x - self.x) * 180/pi
 	angle = round(angle / 45) * 45
 	
@@ -101,6 +102,7 @@ Robot.startWalk = function
 	// us closest to the player, and doesn't intersect a wall
 	// any time soon.
 	playerPos = self.closestPlayer
+	if not playerPos then return
 	bestDx = 0; bestDy = 0
 	bestDistToPlayer = mathUtil.distance(playerPos, self) - 5
 	for dx in range(-1, 1)
@@ -149,11 +151,13 @@ Robot.continueWalk = function(dt)
 	// stop when we would go past the player
 	player = self.closestPlayer
 	walkDir = self.walkDirection
-	stop = false
-	if walkDir.x < 0 and self.x <= player.x then stop = true
-	if walkDir.y < 0 and self.y <= player.y then stop = true
-	if walkDir.x > 0 and self.x >= player.x then stop = true
-	if walkDir.y > 0 and self.y >= player.y then stop = true
+	stop = not player
+	if player then
+		if walkDir.x < 0 and self.x <= player.x then stop = true
+		if walkDir.y < 0 and self.y <= player.y then stop = true
+		if walkDir.x > 0 and self.x >= player.x then stop = true
+		if walkDir.y > 0 and self.y >= player.y then stop = true
+	end if
 	
 	// Also stop when we're about to hit a wall
 	if curRoom.lineSegmentHitsWall(self, 
@@ -182,6 +186,13 @@ Robot.continueWalk = function(dt)
 				end if
 				self.explode
 				return
+			end if
+		end for
+		
+		for p in players
+			if p.overlaps(self) then
+				if not p.dying then p.die
+				self.explode
 			end if
 		end for
 	end if

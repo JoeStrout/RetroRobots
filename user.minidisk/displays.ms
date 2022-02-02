@@ -27,10 +27,6 @@ init = function()
 	
 	display(overlayGfxLayer).mode = displayMode.pixel
 	outer.overlayGfx = display(overlayGfxLayer)
-	overlayGfx.clear color.clear, 1000,650
-	overlayGfx.scrollX = 20
-	overlayGfx.fillRect 0, 610, 1000, 40, color.gray
-	overlayGfx.line 0, 610, 1000, 610, "#444444"
 	
 end function
 

@@ -9,6 +9,7 @@ import "roomManager"
 import "playerController"
 import "shotController"
 import "inputs"
+import "gameUI"
 import "mathUtil"
 
 
@@ -17,19 +18,39 @@ curRoom.createWalls
 
 player = new playerController.Player
 player.init 0
-player.x = 480 - 40
-player.y = 320
 player.inputs = inputs.inputsForPlayer(0)
 displays.action.sprites.push player
 
 player2 = new playerController.Player
 player2.init 1
-player2.x = 480 + 40
-player2.y = 320
 player2.inputs = inputs.inputsForPlayer(1)
 displays.action.sprites.push player2
 
 players = playerController.Player.instances
+
+for p in players; p.reset; end for
+
+totalLivesLeft = function
+	result = player.livesLeft
+	if player2 then result = result + player2.livesLeft
+	return result
+end function
+
+deductLife = function
+	if player2 then
+		if player.livesLeft > player2.livesLeft then
+			player.livesLeft = player.livesLeft - 1
+		else
+			player2.livesLeft = player2.livesLeft - 1
+		end if
+	else
+		player.livesLeft = player.livesLeft - 1
+	end if
+	gameUI.update
+end function
+
+gameUI.init
+gameUI.update
 
 moveToNextRoom = function(playerPos, otherPlayer)
 	dirX = 0; dirY = 0	// direction we are shifting
@@ -44,6 +65,17 @@ moveToNextRoom = function(playerPos, otherPlayer)
 	end if
 
 	if otherPlayer then
+		if otherPlayer.dying or otherPlayer.dead then
+			if totalLivesLeft < 1 then
+				// other player remains dead!
+				otherPlayer.dead = true
+				otherPlayer.image = null
+			else
+				// respawn other player, taking one extra life
+				deductLife
+				otherPlayer.reset
+			end if
+		end if
 		if dirX then
 			otherPlayer.x = playerPos.x - 40 * dirX
 			if playerPos.y > curRoom.y + roomManager.kHeight/2 then
@@ -81,12 +113,30 @@ moveToNextRoom = function(playerPos, otherPlayer)
 	curRoom.close
 	outer.curRoom = nextRoom
 	playerPos.disabled = false
-	if otherPlayer then otherPlayer.disabled = false
+	if otherPlayer and not otherPlayer.dead then otherPlayer.disabled = false
 end function
 
-while true
-	yield
-	updatable.update
+startNewLevel = function
+	curRoom.close
+	outer.curRoom = new roomManager.Room
+	curRoom.createWalls
+	curRoom.createRobots 1
+	// Note: when we get down to 1 life, this always gives it to player 1.
+	// Maybe we should instead give it to whichever player died last?
+	for p in players
+		if totalLivesLeft then
+			deductLife
+			p.dead = false
+		end if 
+	end for
+	for p in players; if not p.dead then p.reset; end for
+end function
+
+endGame = function
+	outer.gameOver = true
+end function
+
+checkRoomExit = function
 	if players.len == 1 then
 		// single player, simple case: shift when out of bounds
 		if curRoom.isOutOfBounds(player) then
@@ -108,6 +158,35 @@ while true
 			end if
 		end for
 	end if
-	if key.available and key.get == char(27) then break
-end while
+end function
+
+checkGameOver = function
+	allDead = true
+	for p in players
+		if not p.dead then allDead = false
+	end for
+	if not allDead then return
+	
+	// OK, players are all currently dead.  Game over if
+	// no lives left; otherwise, start a new level and 
+	// spawn in one or both.
+	if totalLivesLeft then
+		startNewLevel
+	else
+		endGame
+	end if
+end function
+
+gameOver = false
+gameLoop = function
+	while not gameOver
+		yield
+		updatable.update
+		checkRoomExit
+		checkGameOver
+		if key.available and key.get == char(27) then break
+	end while
+end function
+
+gameLoop
 

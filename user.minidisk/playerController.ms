@@ -3,6 +3,7 @@
 //	Controls one player on the screen.
 
 if locals == globals then
+	import "listUtil"
 	import "images"
 	import "inputs"
 	import "shotController"
@@ -12,6 +13,7 @@ end if
 Player = new UpdatableSprite
 Player.playerNum = 0		// 0 or 1
 Player.livesLeft = 2
+Player.score = 0
 Player.powerShot = false
 Player.tripleShot = false
 Player.hasShield = false
@@ -28,6 +30,7 @@ Player.idleSince = 0
 Player.lastShotTime = 0
 Player.disabled = false	// (disabled when they leave the room)
 Player.dying = false
+Player.dead = false
 Player.localBounds = new Bounds
 Player.localBounds.width = 20
 Player.localBounds.height = 40
@@ -41,7 +44,23 @@ Player.init = function(playerTwo)
 	Player.instances.push self
 end function
 
+Player.reset = function
+	livePlayers = 0
+	for p in players; if not p.dead then livePlayers = livePlayers + 1; end for
+	if livePlayers > 1 then
+		self.x = 480 - 40 * (self.playerNum==0) + 40 * (self.playerNum==1)
+	else
+		self.x = 480
+	end if
+	self.y = 320
+	self.dead = false
+	self.dying =  false
+	self.disabled = false
+	self.image = images.playerStanding
+end function
+
 Player.update = function(dt=0.0167)
+	if self.dead then return
 	if self.dying then self.doDeathAnimation dt
 	if self.disabled then return
 	h = self.inputs.horizontal
@@ -159,11 +178,12 @@ end function
 Player.doDeathAnimation = function(dt)
 	self.x = self.deathPosition[0] + mathUtil.randRange(-5, 5)
 	self.y = self.deathPosition[1] + mathUtil.randRange(-5, 5)
+	self.image = images.playerHit.any
 	self.dieTimeLeft = self.dieTimeLeft - dt
 	if self.dieTimeLeft < 0 then
-		// ToDo: respawn etc. properly
 		self.dying = false
-		self.disabled = false
+		self.dead = true
+		self.x = -999
 	end if
 end function
 

@@ -2,7 +2,7 @@
 // keyboard/gamepad inputs for one player.
 
 
-if dvorak then
+if globals.hasIndex("dvorak") and dvorak then
 	dpadKeys = [",aoe", "chtn"]
 else
 	dpadKeys = ["wasd", "ijkl"]
