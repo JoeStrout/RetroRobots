@@ -2,6 +2,7 @@
 
 
 import "displays"; displays.init
+import "constants"
 import "images"
 import "updatable"
 import "robotController"
@@ -100,6 +101,7 @@ moveToNextRoom = function(playerPos, otherPlayer)
 	nextRoom.y = curRoom.y - roomManager.kHeight * dirY
 	nextRoom.createWalls
 	nextRoom.createRobots 1
+	nextRoom.clearRobotsNearPlayer
 	while curRoom.x != targetX or curRoom.y != targetY
 		delta = curRoom.moveTowards(targetX, targetY)
 		nextRoom.shift delta.x, delta.y
@@ -130,6 +132,7 @@ startNewLevel = function
 		end if 
 	end for
 	for p in players; if not p.dead then p.reset; end for
+	curRoom.clearRobotsNearPlayer
 end function
 
 endGame = function

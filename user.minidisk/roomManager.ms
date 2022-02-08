@@ -21,6 +21,7 @@ Wall.localBounds.height = Wall.image.height
 Room = {}
 Room.x = 0
 Room.y = 0
+Room.allBotsBonus = 0
 
 Room.createWalls = function
 	self.walls = []
@@ -109,6 +110,27 @@ Room.createRobots = function(botLevel=0)
 		bot.x = self.x + round(x); bot.y = self.y + round(y)
 		self.robots.push bot
 	end for
+	
+	self.allBotsBonus = self.robots.len * constants.bonusPerRobot
+end function
+
+Room.clearRobotsNearPlayer = function
+	for p in players
+		if p.dead then continue
+		
+		for i in range(self.robots.len - 1)
+			dist = mathUtil.distance(self.robots[i], p)
+			if dist < 200 then self.robots[i].die
+		end for		
+	end for
+	self.allBotsBonus = self.robots.len * constants.bonusPerRobot
+end function
+
+Room.awardRoomBonus = function
+	for p in players
+		p.addToScore self.allBotsBonus
+	end for
+	self.allBotsBonus = 0
 end function
 
 Room.isOutOfBounds = function(xyPos, extraFar=false)

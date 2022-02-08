@@ -49,9 +49,18 @@ Shot.update = function(dt=0.0167)
 		bot = curRoom.botHitByLineSegment(oldTail, newHead)
 		if bot and bot != self.ignore then
 			bot.explode
+			if self.ignore isa playerController.Player then
+				self.ignore.addToScore constants.pointsPerRobotDestroyed
+			end if
 			self.die	// ToDo: unless powershot!
 		end if
 	end if
+	for p in players
+		if p.hitByLineSegment(oldTail, newHead) and self.ignore != p then
+			p.die
+			self.die	// ToDo: unless powershot!
+		end if
+	end for
 		
 	// check whether we're out of bounds
 	if self.x < -40 or self.x > 1000 or self.y < -40 or self.y > 680 then

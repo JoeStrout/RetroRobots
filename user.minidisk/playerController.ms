@@ -59,6 +59,16 @@ Player.reset = function
 	self.image = images.playerStanding
 end function
 
+Player.addToScore = function(points)
+	if floor((self.score + points) / constants.bonusLifeEvery) >
+	   floor(self.score / constants.bonusLifeEvery) then
+		// bonus life!
+		self.livesLeft = self.livesLeft + 1
+	end if
+	self.score = self.score + points
+	gameUI.update
+end function
+
 Player.update = function(dt=0.0167)
 	if self.dead then return
 	if self.dying then self.doDeathAnimation dt
@@ -163,6 +173,11 @@ Player.checkCollisions = function
 		end if
 	end for
 end function
+
+Player.hitByLineSegment = function(endA, endB)
+	return self.worldBounds.overlapsLineSegment(endA, endB)
+end function
+
 
 Player.die = function
 	if self.dying then return // too late, already dying

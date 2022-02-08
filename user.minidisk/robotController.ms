@@ -39,6 +39,9 @@ Robot.die = function
 	super.die
 	display(robotDisplayNum).sprites.removeVal self
 	curRoom.robots.removeVal self
+	if not curRoom.robots then
+		curRoom.awardRoomBonus
+	end if
 end function
 
 Robot.update = function(dt=0.0167)
