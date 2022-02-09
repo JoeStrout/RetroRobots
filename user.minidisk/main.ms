@@ -1,6 +1,8 @@
 // Main program for the Retro Robots game.
 
 
+import "mathUtil"
+import "listUtil"
 import "displays"; displays.init
 import "constants"
 import "images"
@@ -9,10 +11,16 @@ import "robotController"
 import "roomManager"
 import "playerController"
 import "shotController"
+import "evilBottoController"
 import "inputs"
 import "gameUI"
-import "mathUtil"
 
+
+curLevel = 5
+bottoAppearTime = 0
+movingToNextRoom = false
+
+botto = evilBottoController.Botto
 
 curRoom = new roomManager.Room
 curRoom.createWalls
@@ -54,10 +62,21 @@ deductLife = function
 	gameUI.update
 end function
 
+curLevel = function
+	score = player.score
+	if player2 and player2.score > player.score then score = player2.score
+	if score > 10000 then return 4
+	if score > 7000 then return 3
+	if score > 3000 then return 2
+	if score > 800 then return 1
+	return 0
+end function
+
 gameUI.init
 gameUI.update
 
 moveToNextRoom = function(playerPos, otherPlayer)
+	globals.movingToNextRoom = true
 	dirX = 0; dirY = 0	// direction we are shifting
 	if playerPos.x < curRoom.x + 10 then
 		dirX = 1
@@ -104,7 +123,7 @@ moveToNextRoom = function(playerPos, otherPlayer)
 	nextRoom.x = curRoom.x - roomManager.kWidth * dirX
 	nextRoom.y = curRoom.y - roomManager.kHeight * dirY
 	nextRoom.createWalls
-	nextRoom.createRobots 1
+	nextRoom.createRobots curLevel
 	nextRoom.clearRobotsNearPlayer
 	while curRoom.x != targetX or curRoom.y != targetY
 		delta = curRoom.moveTowards(targetX, targetY)
@@ -114,19 +133,26 @@ moveToNextRoom = function(playerPos, otherPlayer)
 			p.y = p.y + delta.y
 		end for
 		displays.shiftFloor delta.x, delta.y
+		botto.shift delta.x, delta.y
 		yield
 	end while
 	curRoom.close
 	outer.curRoom = nextRoom
 	playerPos.disabled = false
 	if otherPlayer and not otherPlayer.dead then otherPlayer.disabled = false
+	botto.deactivate
+	botto.jumpTo playerPos.x + dirX*20, playerPos.y + dirY*100
+	outer.bottoAppearTime = time + 20 / (curLevel + 1)
+	globals.movingToNextRoom = false
 end function
 
 startNewLevel = function
 	curRoom.close
+	botto.deactivate
+	botto.jumpTo -100, 320
 	outer.curRoom = new roomManager.Room
 	curRoom.createWalls
-	curRoom.createRobots 1
+	curRoom.createRobots curLevel
 	// Note: when we get down to 1 life, this always gives it to player 1.
 	// Maybe we should instead give it to whichever player died last?
 	for p in players
@@ -137,6 +163,7 @@ startNewLevel = function
 	end for
 	for p in players; if not p.dead then p.reset; end for
 	curRoom.clearRobotsNearPlayer
+	outer.bottoAppearTime = time + 4 + 20 / curLevel
 end function
 
 endGame = function
@@ -191,12 +218,17 @@ gameLoop = function
 	while not gameOver
 		fpsFrameCount = fpsFrameCount + 1
 		if time > fpsStartTime + 1 then
-			text.row=1; text.column=60; print fpsFrameCount+"   "
+			//text.row=1; text.column=60; print fpsFrameCount+"   "
 			fpsFrameCount = 0
 			fpsStartTime = time
 		end if
 		yield
 		updatable.update
+		if botto.active then
+			botto.update
+		else if bottoAppearTime and time > bottoAppearTime then
+			botto.activate		
+		end if
 		checkRoomExit
 		checkGameOver
 		if key.available and key.get == char(27) then break

@@ -43,6 +43,8 @@ end for
 
 shot = Image.create(32,8, color.white)
 
+botto = spriteSheet.getImage(369, 11, 53, 54)
+
 if locals == globals then
 	clear
 	for i in botBoom.indexes
