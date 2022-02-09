@@ -120,7 +120,7 @@ Room.clearRobotsNearPlayer = function
 		
 		for i in range(self.robots.len - 1)
 			dist = mathUtil.distance(self.robots[i], p)
-			if dist < 200 then self.robots[i].die
+			if dist < 200 then self.robots[i].die self
 		end for		
 	end for
 	self.allBotsBonus = self.robots.len * constants.bonusPerRobot

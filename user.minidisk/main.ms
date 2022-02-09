@@ -22,10 +22,14 @@ player.init 0
 player.inputs = inputs.inputsForPlayer(0)
 displays.action.sprites.push player
 
-player2 = new playerController.Player
-player2.init 1
-player2.inputs = inputs.inputsForPlayer(1)
-displays.action.sprites.push player2
+if globals.hasIndex("numPlayers") and numPlayers == 2 then
+	player2 = new playerController.Player
+	player2.init 1
+	player2.inputs = inputs.inputsForPlayer(1)
+	displays.action.sprites.push player2
+else
+	player2 = null
+end if
 
 players = playerController.Player.instances
 
@@ -142,7 +146,7 @@ end function
 checkRoomExit = function
 	if players.len == 1 then
 		// single player, simple case: shift when out of bounds
-		if curRoom.isOutOfBounds(player) then
+		if curRoom.isOutOfBounds(player) and not player.dead then
 			moveToNextRoom player
 		end if
 	else
@@ -182,7 +186,15 @@ end function
 
 gameOver = false
 gameLoop = function
+	fpsStartTime = time
+	fpsFrameCount = 0
 	while not gameOver
+		fpsFrameCount = fpsFrameCount + 1
+		if time > fpsStartTime + 1 then
+			text.row=1; text.column=60; print fpsFrameCount+"   "
+			fpsFrameCount = 0
+			fpsStartTime = time
+		end if
 		yield
 		updatable.update
 		checkRoomExit

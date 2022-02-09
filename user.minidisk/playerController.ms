@@ -69,18 +69,24 @@ Player.addToScore = function(points)
 	gameUI.update
 end function
 
+lineNum = 22
+log = function(s)
+	text.row = lineNum; print s
+	if lineNum > 0 then outer.lineNum = lineNum - 1
+end function
+
 Player.update = function(dt=0.0167)
 	if self.dead then return
 	if self.dying then self.doDeathAnimation dt
 	if self.disabled then return
 	h = self.inputs.horizontal
 	v = self.inputs.vertical
-	if self.inputs.fire then
+	if self.inputs.fire and time >= self.lastShotTime + 0.3 then
 		// shooting
 		dx = self.aim[0]; dy = self.aim[1]
 		if h or v then
-			dx = (h > 0) - (h < 0)
-			dy = (v > 0) - (v < 0)
+			dx = sign(h)	//(h > 0) - (h < 0)
+			dy = sign(v)	//(v > 0) - (v < 0)
 		end if
 		self.aim = [dx, dy]
 		if dx > 0 then
@@ -129,7 +135,7 @@ Player.update = function(dt=0.0167)
 		end if
 	else
 		// moving
-		self.aim = [(h > 0) - (h < 0), (v > 0) - (v < 0)]
+		self.aim = [sign(h), sign(v)]
 		if h > 0 then
 			self.scale = [1,1]
 		else if h < 0 then

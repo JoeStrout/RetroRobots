@@ -35,11 +35,12 @@ Robot.make = function(level=0)
 	return noob
 end function
 
-Robot.die = function
+Robot.die = function(room)
+	if room == null then room = curRoom
 	super.die
 	display(robotDisplayNum).sprites.removeVal self
-	curRoom.robots.removeVal self
-	if not curRoom.robots then
+	room.robots.removeVal self
+	if room == curRoom and not curRoom.robots then
 		curRoom.awardRoomBonus
 	end if
 end function
