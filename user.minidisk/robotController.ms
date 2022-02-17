@@ -13,6 +13,7 @@ Robot = new UpdatableSprite
 Robot.walkSpeed = 64
 Robot.level = 0
 Robot.isArmored = false
+Robot.armor = null  // (armor sprite)
 Robot.image = images.botIdle[0]
 Robot.walking = false
 Robot.animFrames = images.botIdle
@@ -32,13 +33,31 @@ Robot.make = function(level=0)
 	noob.tint = levelColors[level]
 	noob.nextActionTime = time + mathUtil.randRange(1.5, 5)
 	display(robotDisplayNum).sprites.push noob
+	if level > 3 or true then
+		noob.isArmored = true
+		noob.armor = new Sprite
+		noob.armor.image = images.armorFront
+		noob.armor.x = noob.x
+		noob.armor.y = noob.y
+		display(robotDisplayNum).sprites.push noob.armor
+		self.updateArmor
+	end if
 	return noob
+end function
+
+Robot.positionAt = function(x, y)
+	self.x = round(x)
+	self.y = round(y)
+	self.updateArmor
 end function
 
 Robot.die = function(room)
 	if room == null then room = curRoom
 	super.die
 	display(robotDisplayNum).sprites.removeVal self
+	if self.armor then 
+		display(robotDisplayNum).sprites.removeVal self.armor
+	end if
 	room.robots.removeVal self
 	if room == curRoom and not curRoom.robots then
 		curRoom.awardRoomBonus
@@ -62,6 +81,26 @@ Robot.update = function(dt=0.0167)
 	if time > self.nextActionTime and (not self.walking or self.level > 1) then
 		self.act
 	end if
+end function
+
+Robot.updateArmor = function
+	if not self.armor then return
+	if self.isDead or not self.isArmored then
+		display(robotDisplayNum).sprites.removeVal self.armor
+		self.armor = null
+		self.isArmored = false
+		return
+	end if
+	self.armor.x = self.x
+	self.armor.y = self.y
+	img = images.armorFront
+	if self.animFrames == images.botWalkUp then
+		img = images.armorBack
+	else if self.animFrames == images.botWalkRight then
+		img = images.armorSide
+	end if		
+	if self.armor.image != img then self.armor.image = img
+	self.armor.scale = self.scale
 end function
 
 Robot.act = function
@@ -99,6 +138,7 @@ Robot.explode = function
 	self.curFrame = -1
 	self.frameRate = 16
 	self.nextFrameTime = time
+	self.updateArmor
 end function
 
 Robot.startWalk = function
@@ -148,6 +188,7 @@ Robot.startWalk = function
 	end if
 	self.frameRate = 4
 	self.walking = true
+	self.updateArmor
 end function
 
 Robot.continueWalk = function(dt)
@@ -179,7 +220,7 @@ Robot.continueWalk = function(dt)
 	else
 		self.x = self.x + walkDir.x * self.walkSpeed * dt
 		self.y = self.y + walkDir.y * self.walkSpeed * dt
-		
+	
 		// Check for collisions
 		for sp in curRoom.robots + curRoom.walls
 			if sp == self then continue
@@ -200,6 +241,7 @@ Robot.continueWalk = function(dt)
 			end if
 		end for
 	end if
+	self.updateArmor
 	
 end function
 

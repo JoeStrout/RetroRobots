@@ -36,6 +36,10 @@ botWalkRight = []
 botWalkRight.push spriteSheet.getImage(48*5+4,88, 48,48)
 botWalkRight.push spriteSheet.getImage(48*6+4,88, 48,48)
 
+armorFront = spriteSheet.getImage(48*0+3, 55, 48, 32)
+armorBack = spriteSheet.getImage(48*1+3, 55, 48, 32)
+armorSide = spriteSheet.getImage(48*2+5, 55, 48, 32)
+
 botBoom = []
 for i in range(0,3)
 	botBoom.push spriteSheet.getImage(54*i, 4, 54, 56)

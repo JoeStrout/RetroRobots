@@ -107,7 +107,7 @@ Room.createRobots = function(botLevel=0)
 		x = w * (col + 0.5) + w * mathUtil.randRange(-0.35, 0.35)
 		y = h * (row + 0.5) + h * mathUtil.randRange(-0.3, 0.3)
 		bot = robotController.Robot.make(botLevel)
-		bot.x = self.x + round(x); bot.y = self.y + round(y)
+		bot.positionAt self.x + x, self.y + y
 		self.robots.push bot
 	end for
 	
@@ -166,6 +166,7 @@ Room.shift = function(dx, dy)
 	for bot in self.robots
 		bot.x = bot.x + dx
 		bot.y = bot.y + dy
+		bot.updateArmor
 	end for
 end function
 
