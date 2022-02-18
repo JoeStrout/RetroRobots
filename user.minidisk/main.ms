@@ -14,7 +14,9 @@ import "shotController"
 import "evilBottoController"
 import "inputs"
 import "gameUI"
+import "sounds"
 
+sounds.loadAll
 
 curLevel = 5
 bottoAppearTime = 0

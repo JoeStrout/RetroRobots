@@ -165,6 +165,7 @@ Player.fire = function
 	shot.rotation = atan(self.aim[1], self.aim[0]) * 180/pi
 	shot.tint = self.tint
 	displays.action.sprites.push shot
+	sounds.PlayerShot.playAt self
 end function
 
 Player.checkCollisions = function
@@ -194,6 +195,7 @@ Player.die = function
 	self.hasShield = false
 	self.dieTimeLeft = 2
 	self.deathPosition = [self.x, self.y]
+	sounds.ElectricZap.playAt self
 end function
 
 Player.doDeathAnimation = function(dt)

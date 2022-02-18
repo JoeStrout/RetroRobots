@@ -141,6 +141,7 @@ Robot.fire = function
 	shot.tint = self.tint
 	if self.level > 2 then shot.speed = 1000 else shot.speed = 400
 	displays.action.sprites.push shot
+	sounds.BotShot.playAt self
 end function
 
 Robot.breakArmor = function
@@ -149,6 +150,7 @@ Robot.breakArmor = function
 	self.armor.breaking = true
 	self.armor.step = 0
 	self.armor.image = images.armorBoom[0]
+	sounds.ArmorBurst.playAt self
 end function
 
 Robot.explode = function
@@ -159,6 +161,7 @@ Robot.explode = function
 	self.frameRate = 16
 	self.nextFrameTime = time
 	self.updateArmor
+	sounds.BotDie.playAt self
 end function
 
 Robot.startWalk = function
