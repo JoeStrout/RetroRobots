@@ -33,9 +33,10 @@ Robot.make = function(level=0)
 	noob.tint = levelColors[level]
 	noob.nextActionTime = time + mathUtil.randRange(1.5, 5)
 	display(robotDisplayNum).sprites.push noob
-	if level > 3 or true then
+	if level > 3 then
 		noob.isArmored = true
 		noob.armor = new Sprite
+		noob.armor.breaking = false
 		noob.armor.image = images.armorFront
 		noob.armor.x = noob.x
 		noob.armor.y = noob.y
@@ -65,6 +66,17 @@ Robot.die = function(room)
 end function
 
 Robot.update = function(dt=0.0167)
+	if self.armor and self.armor.breaking then
+		self.armor.step = self.armor.step + 1
+		frame = floor(self.armor.step / 5)
+		if frame >= images.armorBoom.len then
+			display(robotDisplayNum).sprites.removeVal self.armor
+		else
+			self.armor.image = images.armorBoom[frame]
+		end if
+		self.armor.x = self.x; self.armor.y = self.y
+	end if
+	
 	if time > self.nextFrameTime then
 		if self.isDead and self.curFrame == self.animFrames.len-1 then
 			self.die
@@ -84,7 +96,7 @@ Robot.update = function(dt=0.0167)
 end function
 
 Robot.updateArmor = function
-	if not self.armor then return
+	if not self.armor or self.armor.breaking then return
 	if self.isDead or not self.isArmored then
 		display(robotDisplayNum).sprites.removeVal self.armor
 		self.armor = null
@@ -129,6 +141,14 @@ Robot.fire = function
 	shot.tint = self.tint
 	if self.level > 2 then shot.speed = 1000 else shot.speed = 400
 	displays.action.sprites.push shot
+end function
+
+Robot.breakArmor = function
+	if not self.armor then return
+	self.isArmored = false
+	self.armor.breaking = true
+	self.armor.step = 0
+	self.armor.image = images.armorBoom[0]
 end function
 
 Robot.explode = function

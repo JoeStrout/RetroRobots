@@ -48,9 +48,16 @@ Shot.update = function(dt=0.0167)
 		end if
 		bot = curRoom.botHitByLineSegment(oldTail, newHead)
 		if bot and bot != self.ignore then
-			bot.explode
+			points = 0
+			if bot.isArmored then
+				bot.breakArmor
+				points = constants.pointsPerArmorHit
+			else
+				bot.explode
+				points = constants.pointsPerRobotDestroyed
+			end if
 			if self.ignore isa playerController.Player then
-				self.ignore.addToScore constants.pointsPerRobotDestroyed
+				self.ignore.addToScore points
 			end if
 			self.die	// ToDo: unless powershot!
 		end if
