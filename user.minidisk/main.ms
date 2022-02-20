@@ -129,12 +129,15 @@ moveToNextRoom = function(playerPos, otherPlayer)
 	nextRoom.createWalls
 	nextRoom.createRobots curLevel
 	nextRoom.clearRobotsNearPlayer
+	nextRoom.prepareDoors playerPos
 	while oldRoom.x != targetX or oldRoom.y != targetY
 		delta = oldRoom.moveTowards(targetX, targetY)
 		nextRoom.shift delta.x, delta.y
 		for p in players
-			p.x = p.x + delta.x
-			p.y = p.y + delta.y
+			// Applying slighly less delta to the player shifts them
+			// fully into the room, so they don't get hit by the door.
+			p.x = p.x + delta.x * 0.98
+			p.y = p.y + delta.y * 0.95
 		end for
 		displays.shiftFloor delta.x, delta.y
 		botto.shift delta.x, delta.y
@@ -168,7 +171,7 @@ startNewLevel = function
 	end for
 	for p in players; if not p.dead then p.reset; end for
 	curRoom.clearRobotsNearPlayer
-	outer.bottoAppearTime = time + 4 + 20 / curLevel
+	outer.bottoAppearTime = time + 20 / (curLevel + 1) + 4
 end function
 
 endGame = function

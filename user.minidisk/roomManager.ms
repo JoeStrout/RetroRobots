@@ -18,6 +18,33 @@ Wall.localBounds = new Bounds
 Wall.localBounds.width = Wall.image.width
 Wall.localBounds.height = Wall.image.height
 
+DoorMover = new updatable.Updatable
+DoorMover.speed = 100  // (pixels/sec)
+DoorMover.init = function(wall, delta, delay=1)
+	super.init
+	self.wall = wall
+	self.delta = delta
+	self.wall.x = self.wall.x + delta[0]
+	self.wall.y = self.wall.y + delta[1]
+	self.startTime = time + delay
+end function
+DoorMover.update = function(dt)
+	if time < self.startTime then return
+	d = dt * self.speed
+	if d > abs(self.delta[0]) and d > abs(self.delta[1]) then
+		self.wall.x = self.wall.x - self.delta[0]
+		self.wall.y = self.wall.y - self.delta[1]
+		self.die
+	else
+		dx = -d * sign(self.delta[0])
+		dy = -d * sign(self.delta[1])
+		self.wall.x = self.wall.x + dx
+		self.wall.y = self.wall.y + dy
+		self.delta[0] = self.delta[0] + dx
+		self.delta[1] = self.delta[1] + dy
+	end if		
+end function
+
 Room = {}
 Room.x = 0
 Room.y = 0
@@ -84,6 +111,39 @@ Room.newVerticalWall = function(col, row)
 	wall.y = self.y + (row + 0.5) * kHeight / mazeGenerator.kRows
 	displays.wall.sprites.push wall
 	return wall
+end function
+
+// Assume the player is entering the room at entryPos.
+// Prepare a door, to be activated later, after the
+// room shift is complete.
+Room.prepareDoors = function(entryPos)
+	if entryPos.x < self.x + 100 then
+		door = self.newVerticalWall(0, floor(mazeGenerator.kRows/2))
+		door2 = self.newVerticalWall(0,floor(mazeGenerator.kRows/2))
+		startDir = [0, door.image.height * door.scale[1]]
+	else if entryPos.x > self.x + kWidth - 100 then
+		door = self.newVerticalWall(mazeGenerator.kCols,floor(mazeGenerator.kRows/2))
+		door2 = self.newVerticalWall(mazeGenerator.kCols,floor(mazeGenerator.kRows/2))
+		startDir = [0, -door.image.height * door.scale[1]]
+	else if entryPos.y < self.y + 100 then
+		door = self.newHorizontalWall(floor(mazeGenerator.kCols/2), 0)
+		door2 = self.newHorizontalWall(floor(mazeGenerator.kCols/2), 0)
+		startDir = [door.image.width * door.scale[0], 0]
+	else
+		door = self.newHorizontalWall(floor(mazeGenerator.kCols/2), mazeGenerator.kRows)
+		door2 = self.newHorizontalWall(floor(mazeGenerator.kCols/2), mazeGenerator.kRows)
+		startDir = [-door.image.width * door.scale[0], 0]
+	end if
+	
+	self.walls.push door
+	self.walls.push door2
+
+	// Move the doors to their "open" position, then set them to move
+	// back to the closed position after a delay.
+	mover = new DoorMover
+	mover.init door, startDir
+	mover2 = new DoorMover
+	mover2.init door2, [-startDir[0], -startDir[1]]
 end function
 
 Room.createRobots = function(botLevel=0)
@@ -199,6 +259,7 @@ end function
 
 Room.botHitByLineSegment = function(endA, endB)
 	for bot in self.robots
+		if bot.isDead then continue
 		if bot.worldBounds.overlapsLineSegment(endA, endB) then return bot
 	end for
 	return null
