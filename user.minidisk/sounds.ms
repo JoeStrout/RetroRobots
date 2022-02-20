@@ -19,6 +19,23 @@ SoundSubclass.playAt = function(xOrMap,y)
 	self.play self.volume, pan, speed
 end function
 
+SoundSubclass.playAfterDelay = function(delay=0.5, pitch=1)
+	delayedSound = new DelayedSoundPlayer
+	delayedSound.init
+	delayedSound.playTime = time + delay
+	delayedSound.sound = self
+	delayedSound.pitch = pitch
+end function
+
+DelayedSoundPlayer = new updatable.Updatable
+DelayedSoundPlayer.playTime = 0
+DelayedSoundPlayer.sound = null
+DelayedSoundPlayer.update = function(dt=0.016)
+	if time > self.playTime then
+		self.sound.play 1, 0, self.pitch
+		self.die
+	end if
+end function
 
 loadAll = function
 	for f in file.children("sounds")

@@ -78,6 +78,7 @@ gameUI.init
 gameUI.update
 
 moveToNextRoom = function(playerPos, otherPlayer)
+	if curRoom.robots then curRoom.playChickenTaunt
 	globals.movingToNextRoom = true
 	dirX = 0; dirY = 0	// direction we are shifting
 	if playerPos.x < curRoom.x + 10 then
@@ -121,14 +122,15 @@ moveToNextRoom = function(playerPos, otherPlayer)
 
 	targetX = curRoom.x + roomManager.kWidth * dirX
 	targetY = curRoom.y + roomManager.kHeight * dirY
+	oldRoom = curRoom
 	nextRoom = new roomManager.Room
 	nextRoom.x = curRoom.x - roomManager.kWidth * dirX
 	nextRoom.y = curRoom.y - roomManager.kHeight * dirY
 	nextRoom.createWalls
 	nextRoom.createRobots curLevel
 	nextRoom.clearRobotsNearPlayer
-	while curRoom.x != targetX or curRoom.y != targetY
-		delta = curRoom.moveTowards(targetX, targetY)
+	while oldRoom.x != targetX or oldRoom.y != targetY
+		delta = oldRoom.moveTowards(targetX, targetY)
 		nextRoom.shift delta.x, delta.y
 		for p in players
 			p.x = p.x + delta.x
@@ -138,14 +140,15 @@ moveToNextRoom = function(playerPos, otherPlayer)
 		botto.shift delta.x, delta.y
 		yield
 	end while
-	curRoom.close
 	outer.curRoom = nextRoom
+	oldRoom.close
 	playerPos.disabled = false
 	if otherPlayer and not otherPlayer.dead then otherPlayer.disabled = false
 	botto.deactivate
 	botto.jumpTo playerPos.x + dirX*20, playerPos.y + dirY*100
 	outer.bottoAppearTime = time + 20 / (curLevel + 1)
 	globals.movingToNextRoom = false
+	curRoom.playIntroSounds 0, 3 * roomManager.Room.chicken
 end function
 
 startNewLevel = function

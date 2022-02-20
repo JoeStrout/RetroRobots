@@ -22,6 +22,7 @@ Room = {}
 Room.x = 0
 Room.y = 0
 Room.allBotsBonus = 0
+Room.chicken = false
 
 Room.createWalls = function
 	self.walls = []
@@ -126,11 +127,58 @@ Room.clearRobotsNearPlayer = function
 	self.allBotsBonus = self.robots.len * constants.bonusPerRobot
 end function
 
+Room.playIntroSounds = function(pitch=0, delay=0)
+	if pitch == 0 then
+		// pick a random pitch
+		if rnd < 0.25 then
+			pitch = 0.9
+		else if rnd < 0.25 then
+			pitch = 1.1
+		else
+			pitch = 1
+		end if
+	end if
+	
+	if rnd < 0.3 then
+		sounds.VoiceThe.playAfterDelay delay, pitch
+		self.randomEpithet.playAfterDelay delay + 0.25, pitch
+		sounds.VoiceMustNotEscape.playAfterDelay delay + 0.9, pitch
+	else
+		sounds.VoiceGetThe.playAfterDelay delay, pitch
+		self.randomEpithet.playAfterDelay delay + 0.45, pitch
+	end if
+	
+	if pitch < 1.1 and rnd < 0.9 then
+		self.playIntroSounds pitch + 0.1, delay + 1.5
+	end if
+end function
+
+Room.randomEpithet = function
+	if self.chicken and rnd < 0.5 then
+		return sounds.VoiceChicken
+	else if rnd < 0.5 then
+		return sounds.VoiceIntruder
+	else
+		return sounds.VoiceHumanoid
+	end if
+end function
+
+Room.playChickenTaunt = function
+	sounds.VoiceChicken.play
+	if rnd < 0.5 then
+		sounds.VoiceBokBok.playAfterDelay 0.7
+	else
+		sounds.VoiceFightLikeRobot.playAfterDelay 0.7
+	end if
+	Room.chicken = true
+end function
+
 Room.awardRoomBonus = function
 	for p in players
 		p.addToScore self.allBotsBonus
 	end for
 	self.allBotsBonus = 0
+	Room.chicken = false
 end function
 
 Room.isOutOfBounds = function(xyPos, extraFar=false)
@@ -185,7 +233,7 @@ Room.close = function
 	self.walls = []
 	if self.robots then
 		for i in range(self.robots.len - 1)
-			self.robots[i].die
+			self.robots[i].die self
 		end for
 	end if
 	self.robots = []
