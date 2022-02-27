@@ -12,6 +12,7 @@ import "roomManager"
 import "playerController"
 import "shotController"
 import "evilBottoController"
+import "powerups"
 import "inputs"
 import "gameUI"
 import "sounds"
@@ -119,6 +120,7 @@ moveToNextRoom = function(playerPos, otherPlayer)
 			end if
 		end if
 	end if
+	gameUI.update
 
 	targetX = curRoom.x + roomManager.kWidth * dirX
 	targetY = curRoom.y + roomManager.kHeight * dirY
@@ -129,6 +131,7 @@ moveToNextRoom = function(playerPos, otherPlayer)
 	nextRoom.createWalls
 	nextRoom.createRobots curLevel
 	nextRoom.clearRobotsNearPlayer
+	nextRoom.createPowerup
 	nextRoom.prepareDoors playerPos
 	while oldRoom.x != targetX or oldRoom.y != targetY
 		delta = oldRoom.moveTowards(targetX, targetY)
@@ -170,6 +173,7 @@ startNewLevel = function
 		end if 
 	end for
 	for p in players; if not p.dead then p.reset; end for
+	gameUI.update
 	curRoom.clearRobotsNearPlayer
 	outer.bottoAppearTime = time + 20 / (curLevel + 1) + 4
 end function

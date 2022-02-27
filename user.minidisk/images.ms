@@ -43,6 +43,21 @@ armorBoom = []
 armorBoom.push spriteSheet.getImage(148, 53, 48, 35)
 armorBoom.push spriteSheet.getImage(196, 53, 48, 35)
 
+powerup = []
+powerup.push spriteSheet.getImage(427, 32*2, 36, 32)
+powerup.push spriteSheet.getImage(427, 32*1, 36, 32)
+powerup.push spriteSheet.getImage(427, 32*0, 36, 32)
+powerup.push spriteSheet.getImage(470, 32*2, 36, 32)
+powerup.push spriteSheet.getImage(470, 32*1, 36, 32)
+powerup.push spriteSheet.getImage(470, 32*0, 36, 32)
+powerupIcon = []
+powerupIcon.push spriteSheet.getImage(427, 32*5, 36, 32)
+powerupIcon.push spriteSheet.getImage(427, 32*4, 36, 32)
+powerupIcon.push spriteSheet.getImage(427, 32*3, 36, 32)
+powerupIcon.push spriteSheet.getImage(470, 32*5, 36, 32)
+powerupIcon.push spriteSheet.getImage(470, 32*4, 36, 32)
+powerupIcon.push spriteSheet.getImage(470, 32*3, 36, 32)
+
 
 botBoom = []
 for i in range(0,3)
@@ -50,6 +65,7 @@ for i in range(0,3)
 end for
 
 shot = Image.create(32,8, color.white)
+powershot = Image.create(34,10, color.white)
 
 botto = spriteSheet.getImage(369, 11, 53, 54)
 

@@ -50,6 +50,7 @@ Room.x = 0
 Room.y = 0
 Room.allBotsBonus = 0
 Room.chicken = false
+Room.powerupSprite = null
 
 Room.createWalls = function
 	self.walls = []
@@ -175,6 +176,19 @@ Room.createRobots = function(botLevel=0)
 	self.allBotsBonus = self.robots.len * constants.bonusPerRobot
 end function
 
+Room.createPowerup = function
+	pick = powerups.pickAvailable
+	self.powerupSprite = pick.makeSprite
+	col = floor(rnd * mazeGenerator.kCols)
+	row = floor(rnd * mazeGenerator.kRows)
+	w = kWidth / mazeGenerator.kCols
+	h = kHeight / mazeGenerator.kRows
+	self.powerupSprite.x = self.x +
+	   w * (col + 0.5) + w * mathUtil.randRange(-0.35, 0.35)
+	self.powerupSprite.y = self.y +
+	   h * (row + 0.5) + h * mathUtil.randRange(-0.3, 0.3)
+end function
+
 Room.clearRobotsNearPlayer = function
 	for p in players
 		if p.dead then continue
@@ -277,6 +291,10 @@ Room.shift = function(dx, dy)
 		bot.y = bot.y + dy
 		bot.updateArmor
 	end for
+	if self.powerupSprite then
+		self.powerupSprite.x = self.powerupSprite.x + dx
+		self.powerupSprite.y = self.powerupSprite.y + dy
+	end if
 end function
 
 Room.moveTowards = function(targetX, targetY, maxShift=10)
@@ -298,6 +316,10 @@ Room.close = function
 		end for
 	end if
 	self.robots = []
+	if self.powerupSprite then
+		self.powerupSprite.die
+		self.powerupSprite = null
+	end if
 end function
 
 if locals == globals then

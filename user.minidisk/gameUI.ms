@@ -33,18 +33,32 @@ update = function
 		end for
 	end if
 	
-	// draw player 1 score
-	x = g.scrollX + 100
+	// draw player 1 score and powerups
+	x = g.scrollX + 150
 	g.fillRect x, 611, 20*6, 40, barColor
 	s = "000000" + player.score
 	g.print s[-6:], x, 610, player.tint, "large"
+	for i in range(3)
+		x = g.scrollX + 110 - 32*i
+		g.fillRect x, 611, 36, 32, barColor
+		if i < player.powerups.len then
+			g.drawImage player.powerups[i].icon, x, 611, 36, 32
+		end if
+	end for
 	
 	// draw player 2 score
 	if player2 then
-		x = g.scrollX + 860 - 20*6
+		x = g.scrollX + 810 - 20*6
 		g.fillRect x, 611, 20*6, 40, barColor
 		s = "000000" + player2.score
 		g.print s[-6:], x, 610, player2.tint, "large"
+		for i in range(3)
+			x = g.scrollX + 818 + 32*i
+			g.fillRect x, 611, 36, 32, barColor
+			if i < player2.powerups.len then
+				g.drawImage player2.powerups[i].icon, x, 611, 36, 32
+			end if
+		end for
 	end if
 	
 end function

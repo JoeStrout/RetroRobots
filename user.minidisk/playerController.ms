@@ -34,6 +34,7 @@ Player.dead = false
 Player.localBounds = new Bounds
 Player.localBounds.width = 20
 Player.localBounds.height = 40
+Player.powerups = []
 
 Player.instances = []
 
@@ -57,13 +58,33 @@ Player.reset = function
 	self.dying =  false
 	self.disabled = false
 	self.image = images.playerStanding
+	self.powerups = []
+end function
+
+Player.hasPowerup = function(powerup)
+	return self.powerups.indexOf(powerup) != null
+end function
+
+Player.awardPowerup = function(powerup)
+	if powerup == powerups.OneUp then
+		self.livesLeft = self.livesLeft + 1
+		sounds.Pickup.playAt self // ToDo: play extra-life sound
+	else
+		if self.hasPowerup(powerup) then return
+		self.powerups.push powerup
+		self.powerups.sort "sortOrder"
+		sounds.Pickup.playAt self
+	end if
+	gameUI.update
 end function
 
 Player.addToScore = function(points)
+	if self.hasPowerup(powerups.DoubleScore) then points = points * 2
 	if floor((self.score + points) / constants.bonusLifeEvery) >
 	   floor(self.score / constants.bonusLifeEvery) then
 		// bonus life!
 		self.livesLeft = self.livesLeft + 1
+		sounds.Pickup.playAt self // ToDo: play extra-life sound
 	end if
 	self.score = self.score + points
 	gameUI.update

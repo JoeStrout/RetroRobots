@@ -12,12 +12,17 @@ Shot.dx = null	// set on first update, based on rotation
 Shot.dy = null
 Shot.speed = 1000			// (pixels/sec)
 Shot.ignore = null			// sprite to NOT hit
+Shot.powershot = false
 
 Shot.init = function(shooter)
 	super.init
 	self.ignore = shooter
 	self.x = shooter.x
 	self.y = shooter.y
+	if shooter isa playerController.Player and shooter.hasPowerup(powerups.PowerShot) then
+		self.powershot = true
+		self.image = images.powershot
+	end if
 end function
 
 Shot.update = function(dt=0.0167)
@@ -59,13 +64,13 @@ Shot.update = function(dt=0.0167)
 			if self.ignore isa playerController.Player then
 				self.ignore.addToScore points
 			end if
-			self.die	// ToDo: unless powershot!
+			if not self.powershot then self.die
 		end if
 	end if
 	for p in players
 		if p.hitByLineSegment(oldTail, newHead) and self.ignore != p then
 			p.die
-			self.die	// ToDo: unless powershot!
+			if not self.powershot then self.die
 		end if
 	end for
 		
