@@ -10,6 +10,10 @@ if locals == globals then
 	import "updatable"
 end if
 
+Sprite.hitByLineSegment = function(endA, endB)
+	return self.worldBounds.overlapsLineSegment(endA, endB)
+end function
+
 Player = new UpdatableSprite
 Player.playerNum = 0		// 0 or 1
 Player.livesLeft = 2
@@ -102,7 +106,7 @@ Player.update = function(dt=0.0167)
 	if self.disabled then return
 	h = self.inputs.horizontal
 	v = self.inputs.vertical
-	if self.inputs.fire and time >= self.lastShotTime + 0.3 then
+	if self.inputs.fire then
 		// shooting
 		dx = self.aim[0]; dy = self.aim[1]
 		if h or v then
@@ -137,7 +141,7 @@ Player.update = function(dt=0.0167)
 		end if
 		self.aimOffset[0] = self.aimOffset[0] * self.scale[0]
 		self.idleSince = time
-		self.fire
+		if time >= self.lastShotTime + 0.3 then self.fire
 	else if h == 0 and v == 0 then
 		// standing around (idle)
 		idleTime = time - self.idleSince
@@ -179,13 +183,16 @@ Player.fire = function
 	if time < self.lastShotTime + 0.3 then return	// too soon!
 	self.lastShotTime = time
 	
-	shot = new shotController.Shot
-	shot.init self
-	shot.x = self.x + self.aimOffset[0]
-	shot.y = self.y + self.aimOffset[1]
-	shot.rotation = atan(self.aim[1], self.aim[0]) * 180/pi
-	shot.tint = self.tint
-	displays.action.sprites.push shot
+	angles = [0]
+	if self.hasPowerup(powerups.TripleShot) then angles = [-15,0,15]
+	for angle in angles
+		shot = new shotController.Shot
+		shot.init self
+		shot.x = self.x + self.aimOffset[0]
+		shot.y = self.y + self.aimOffset[1]
+		shot.rotation = angle + atan(self.aim[1], self.aim[0]) * 180/pi
+		displays.action.sprites.push shot
+	end for
 	sounds.PlayerShot.playAt self
 end function
 
@@ -200,10 +207,6 @@ Player.checkCollisions = function
 			return
 		end if
 	end for
-end function
-
-Player.hitByLineSegment = function(endA, endB)
-	return self.worldBounds.overlapsLineSegment(endA, endB)
 end function
 
 

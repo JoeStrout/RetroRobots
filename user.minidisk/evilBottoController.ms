@@ -38,6 +38,12 @@ Botto.deactivate = function
 	self.active = false
 end function
 
+Botto.explode = function
+	// ToDo: explosion animation
+	sounds.BottoDie.playAt self
+	self.deactivate
+end function
+
 Botto.setSpeed = function(hyper=false)
 	self.hyper = hyper
 	if hyper then

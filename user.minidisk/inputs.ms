@@ -16,6 +16,7 @@ Inputs.horizontal = function
 	h = 0
 	if self.playerNum == 0 then h = key.axis("Horizontal")
 	if h == 0 then h = key.axis("Joy" + self.playerNum + "Axis1")
+	if abs(h) < 0.1 then h = 0
 	if h then return h
 	h = key.pressed(self.dpadKeys[3]) - key.pressed(self.dpadKeys[1])
 	return h
@@ -25,13 +26,14 @@ Inputs.vertical = function
 	v = 0
 	if self.playerNum == 0 then v = key.axis("Vertical")		
 	if v == 0 then v = key.axis("Joy" + self.playerNum + "Axis2")
+	if abs(v) < 0.1 then v = 0
 	if v then return v
 	v = key.pressed(self.dpadKeys[0]) - key.pressed(self.dpadKeys[2])
 	return v
 end function
 
 Inputs.fire = function
-	if self.playerNum == 0 then
+	if self.playerNum == 0 or self.playerNum == 1 then
 		if key.pressed("left shift") or
 		  key.pressed("joystick 1 button 0") or
 		  key.pressed("joystick 1 button 1") then return true
@@ -39,7 +41,7 @@ Inputs.fire = function
 			return key.pressed("right shift")
 		end if
 		return false
-	else
+	else  // (player 2)
 		return key.pressed("right shift") or
 		  key.pressed("joystick 2 button 0") or
 		  key.pressed("joystick 2 button 1")
@@ -48,7 +50,7 @@ end function
 
 inputsForPlayer = function(playerNum)
 	result = new Inputs
-	result.playerNum = playerNum
+	result.playerNum = playerNum + 1
 	result.dpadKeys = dpadKeys[playerNum]
 	return result
 end function

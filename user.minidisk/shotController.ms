@@ -19,9 +19,11 @@ Shot.init = function(shooter)
 	self.ignore = shooter
 	self.x = shooter.x
 	self.y = shooter.y
+	self.tint = shooter.tint
 	if shooter isa playerController.Player and shooter.hasPowerup(powerups.PowerShot) then
 		self.powershot = true
 		self.image = images.powershot
+		self.tint = color.lerp(self.tint, color.white, 0.5)
 	end if
 end function
 
@@ -67,12 +69,24 @@ Shot.update = function(dt=0.0167)
 			if not self.powershot then self.die
 		end if
 	end if
-	for p in players
-		if p.hitByLineSegment(oldTail, newHead) and self.ignore != p then
-			p.die
-			if not self.powershot then self.die
+	if botto.active and botto.hitByLineSegment(oldTail, newHead) then
+		if self.powershot then
+			botto.explode
+			if self.ignore isa playerController.Player then
+				self.ignore.addToScore constants.pointsPerBottoDestroyed
+			end if
 		end if
-	end for
+		self.die
+		return
+	end if
+	if not (self.ignore isa playerController.Player) then
+		for p in players
+			if p.hitByLineSegment(oldTail, newHead) then
+				p.die
+				if not self.powershot then self.die
+			end if
+		end for
+	end if
 		
 	// check whether we're out of bounds
 	if self.x < -40 or self.x > 1000 or self.y < -40 or self.y > 680 then

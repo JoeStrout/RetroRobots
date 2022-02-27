@@ -2,6 +2,7 @@
 
 SoundSubclass = new Sound
 SoundSubclass.volume = 1
+SoundSubclass.pitch = 1
 SoundSubclass.pitchVariation = 0
 
 SoundSubclass.playAt = function(xOrMap,y)
@@ -14,7 +15,7 @@ SoundSubclass.playAt = function(xOrMap,y)
 	pan = (x-480)/480
 	speed = 1
 	if self.pitchVariation then
-		speed = 1 + self.pitchVariation * 2 * rnd - self.pitchVariation
+		speed = self.pitch + self.pitchVariation * 2 * rnd - self.pitchVariation
 	end if
 	self.play self.volume, pan, speed
 end function
@@ -52,4 +53,7 @@ loadAll = function
 	BotShot.pitchVariation = 0.1
 	BotDie.volume = 0.7
 	BotDie.pitchVariation = 0.1
+	outer.BottoDie = BotDie + {}
+	BottoDie.volume = 1
+	BottoDie.pitch = 0.75
 end function

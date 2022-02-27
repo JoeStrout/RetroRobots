@@ -239,7 +239,8 @@ gameLoop = function
 		if botto.active then
 			botto.update
 		else if bottoAppearTime and time > bottoAppearTime then
-			botto.activate		
+			botto.activate
+			bottoAppearTime = 0		
 		end if
 		checkRoomExit
 		checkGameOver
