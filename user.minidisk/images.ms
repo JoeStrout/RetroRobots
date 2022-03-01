@@ -58,6 +58,7 @@ powerupIcon.push spriteSheet.getImage(470, 32*5, 36, 32)
 powerupIcon.push spriteSheet.getImage(470, 32*4, 36, 32)
 powerupIcon.push spriteSheet.getImage(470, 32*3, 36, 32)
 
+shield = spriteSheet.getImage(290, 4, 63, 55)
 
 botBoom = []
 for i in range(0,3)

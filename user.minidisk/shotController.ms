@@ -82,8 +82,7 @@ Shot.update = function(dt=0.0167)
 	if not (self.ignore isa playerController.Player) then
 		for p in players
 			if p.hitByLineSegment(oldTail, newHead) then
-				p.die
-				if not self.powershot then self.die
+				p.handleHit self, oldTail, newHead
 			end if
 		end for
 	end if

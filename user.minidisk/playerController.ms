@@ -39,6 +39,9 @@ Player.localBounds = new Bounds
 Player.localBounds.width = 20
 Player.localBounds.height = 40
 Player.powerups = []
+Player.shield = new Sprite
+Player.shield.image = images.shield
+Player.shield.visible = false
 
 Player.instances = []
 
@@ -141,9 +144,11 @@ Player.update = function(dt=0.0167)
 		end if
 		self.aimOffset[0] = self.aimOffset[0] * self.scale[0]
 		self.idleSince = time
+		if self.hasPowerup(powerups.Shield) then self.showShield
 		if time >= self.lastShotTime + 0.3 then self.fire
 	else if h == 0 and v == 0 then
 		// standing around (idle)
+		self.hideShield
 		idleTime = time - self.idleSince
 		if idleTime < 10 then
 			self.image = images.playerStanding
@@ -160,6 +165,7 @@ Player.update = function(dt=0.0167)
 		end if
 	else
 		// moving
+		self.hideShield
 		self.aim = [sign(h), sign(v)]
 		if h > 0 then
 			self.scale = [1,1]
@@ -175,6 +181,24 @@ Player.update = function(dt=0.0167)
 		self.y = self.y + v * 150 * dt
 		self.idleSince = time
 		self.checkCollisions
+	end if
+end function
+
+Player.showShield = function
+	if not self.shield.visible then
+		displays.action.sprites.push self.shield
+		self.shield.visible = true
+		self.shield.startTime = time
+	end if
+	self.shield.x = self.x
+	self.shield.y = self.y + 6 * self.aim[1]
+	self.shield.rotation = atan(self.aim[1], self.aim[0]) * 180/pi
+end function
+
+Player.hideShield = function
+	if self.shield.visible then
+		displays.action.sprites.removeVal self.shield
+		self.shield.visible = false
 	end if
 end function
 
@@ -209,6 +233,21 @@ Player.checkCollisions = function
 	end for
 end function
 
+Player.handleHit = function(shot, newHead, oldTail)
+	if self.shield.visible then
+		// Determine whether the bot hits the shield.
+		shotVec = [oldTail.x - newHead.x, oldTail.y - newHead.y]
+		cosAngBetween = self.aim[0]*shotVec[0] + self.aim[1]*shotVec[1] / 
+			(sqrt(self.aim[0]^2 + self.aim[1]^2) * mathUtil.distance(oldTail, newHead))
+		if cosAngBetween < 0.8 then
+			// blocked!
+			shot.die
+			return
+		end if
+	end if
+	self.die
+	if not shot.powershot then shot.die
+end function
 
 Player.die = function
 	if self.dying then return // too late, already dying

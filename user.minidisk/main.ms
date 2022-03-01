@@ -30,15 +30,16 @@ curRoom.createWalls
 
 player = new playerController.Player
 player.init 0
-player.inputs = inputs.inputsForPlayer(0)
 displays.action.sprites.push player
 
 if globals.hasIndex("numPlayers") and numPlayers == 2 then
+	player.inputs = inputs.inputsForPlayer(1)
 	player2 = new playerController.Player
 	player2.init 1
-	player2.inputs = inputs.inputsForPlayer(1)
+	player2.inputs = inputs.inputsForPlayer(2)
 	displays.action.sprites.push player2
 else
+	player.inputs = inputs.inputsForPlayer(0)
 	player2 = null
 end if
 

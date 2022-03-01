@@ -33,7 +33,7 @@ Inputs.vertical = function
 end function
 
 Inputs.fire = function
-	if self.playerNum == 0 or self.playerNum == 1 then
+	if self.playerNum <= 1 then
 		if key.pressed("left shift") or
 		  key.pressed("joystick 1 button 0") or
 		  key.pressed("joystick 1 button 1") then return true
@@ -50,7 +50,7 @@ end function
 
 inputsForPlayer = function(playerNum)
 	result = new Inputs
-	result.playerNum = playerNum + 1
+	result.playerNum = playerNum
 	result.dpadKeys = dpadKeys[playerNum]
 	return result
 end function
