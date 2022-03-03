@@ -56,7 +56,11 @@ TripleShot = new Powerup
 TripleShot.image = images.powerup[4]
 TripleShot.icon = images.powerupIcon[4]
 
-all = [OneUp, DoubleScore, PowerShot, Shield, TripleShot]
+Bounce = new Powerup
+Bounce.image = images.powerup[5]
+Bounce.icon = images.powerupIcon[5]
+
+all = [OneUp, DoubleScore, PowerShot, Shield, TripleShot, Bounce]
 for i in all.indexes
 	all[i].sortOrder = i
 end for
@@ -64,6 +68,7 @@ end for
 // Pick a random powerup that isn't something both players
 // already have.
 pickAvailable = function
+	return Bounce
 	for tries in range(9)
 		choice = all.any
 		for p in players

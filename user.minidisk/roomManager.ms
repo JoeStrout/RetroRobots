@@ -17,6 +17,9 @@ Wall.image = file.loadImage("/sys/pics/shapes/Square.png")
 Wall.localBounds = new Bounds
 Wall.localBounds.width = Wall.image.width
 Wall.localBounds.height = Wall.image.height
+Wall.isHorizontal = function
+	return self.scale[0] > self.scale[1]
+end function
 
 DoorMover = new updatable.Updatable
 DoorMover.speed = 100  // (pixels/sec)
@@ -266,7 +269,7 @@ end function
 
 Room.lineSegmentHitsWall = function(endA, endB)
 	for wall in self.walls
-		if wall.worldBounds.overlapsLineSegment(endA, endB) then return true
+		if wall.worldBounds.overlapsLineSegment(endA, endB) then return wall
 	end for
 	return false
 end function

@@ -48,6 +48,10 @@ loadAll = function
 		outer[name] = s
 	end for
 	
+	outer.bounce = new SoundSubclass
+	bounce.init 0.1, [50,500], [1,0]
+
+	
 	// custom tweaking:
 	PlayerShot.pitchVariation = 0.05
 	BotShot.pitchVariation = 0.1

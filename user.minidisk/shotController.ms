@@ -13,6 +13,8 @@ Shot.dy = null
 Shot.speed = 1000			// (pixels/sec)
 Shot.ignore = null			// sprite to NOT hit
 Shot.powershot = false
+Shot.bounce = false
+Shot.lastWallHit = null
 
 Shot.init = function(shooter)
 	super.init
@@ -20,10 +22,16 @@ Shot.init = function(shooter)
 	self.x = shooter.x
 	self.y = shooter.y
 	self.tint = shooter.tint
-	if shooter isa playerController.Player and shooter.hasPowerup(powerups.PowerShot) then
-		self.powershot = true
-		self.image = images.powershot
-		self.tint = color.lerp(self.tint, color.white, 0.5)
+
+	if shooter isa playerController.Player then
+		if shooter.hasPowerup(powerups.PowerShot) then
+			self.powershot = true
+			self.image = images.powershot
+			self.tint = color.lerp(self.tint, color.white, 0.5)
+		end if
+		if shooter.hasPowerup(powerups.Bounce) then
+			self.bounce = true
+		end if
 	end if
 end function
 
@@ -49,9 +57,22 @@ Shot.update = function(dt=0.0167)
 	newHead.x = self.x + halfLen * self.dx
 	newHead.y = self.y + halfLen * self.dy
 	if curRoom != null then
-		if curRoom.lineSegmentHitsWall(oldTail, newHead) then
-			self.die
-			return
+		wallHit = curRoom.lineSegmentHitsWall(oldTail, newHead)
+		if wallHit and wallHit != self.lastWallHit then
+			if self.bounce and abs(self.dx) > 0.1 and abs(self.dy) > 0.1 then
+				if wallHit.isHorizontal then
+					self.dy = -self.dy
+				else
+					self.dx = -self.dx
+				end if
+				self.rotation = atan(self.dy, self.dx) * 180/pi
+				self.bounce = false
+				sounds.bounce.playAt self
+				self.lastWallHit = wallHit
+			else
+				self.die
+				return
+			end if
 		end if
 		bot = curRoom.botHitByLineSegment(oldTail, newHead)
 		if bot and bot != self.ignore then
