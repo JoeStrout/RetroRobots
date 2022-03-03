@@ -14,7 +14,7 @@ Shot.speed = 1000			// (pixels/sec)
 Shot.ignore = null			// sprite to NOT hit
 Shot.powershot = false
 Shot.bounce = false
-Shot.lastWallHit = null
+Shot.isBouncing = false
 
 Shot.init = function(shooter)
 	super.init
@@ -58,7 +58,7 @@ Shot.update = function(dt=0.0167)
 	newHead.y = self.y + halfLen * self.dy
 	if curRoom != null then
 		wallHit = curRoom.lineSegmentHitsWall(oldTail, newHead)
-		if wallHit and wallHit != self.lastWallHit then
+		if wallHit and not self.isBouncing then
 			if self.bounce and abs(self.dx) > 0.1 and abs(self.dy) > 0.1 then
 				if wallHit.isHorizontal then
 					self.dy = -self.dy
@@ -67,12 +67,14 @@ Shot.update = function(dt=0.0167)
 				end if
 				self.rotation = atan(self.dy, self.dx) * 180/pi
 				self.bounce = false
+				self.isBouncing = true
 				sounds.bounce.playAt self
-				self.lastWallHit = wallHit
 			else
 				self.die
 				return
 			end if
+		else
+			self.isBouncing = false
 		end if
 		bot = curRoom.botHitByLineSegment(oldTail, newHead)
 		if bot and bot != self.ignore then

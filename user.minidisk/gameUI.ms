@@ -1,6 +1,10 @@
 // This module is responsible for drawing the UI at the top of
 // the screen during a game, showing score(s) and lives left.
 
+// Current issues:
+// 1. when lives get beyond 5 or 6, they go too far and don't get erased
+// 2. can't display more than 4 powerups (MIGHT be fixed now)
+
 if globals == locals then
 	import "displays"
 	import "images"
@@ -38,7 +42,7 @@ update = function
 	g.fillRect x, 611, 20*6, 40, barColor
 	s = "000000" + player.score
 	g.print s[-6:], x, 610, player.tint, "large"
-	for i in range(3)
+	for i in range(4)
 		x = g.scrollX + 110 - 32*i
 		g.fillRect x, 611, 36, 32, barColor
 		if i < player.powerups.len then
@@ -52,7 +56,7 @@ update = function
 		g.fillRect x, 611, 20*6, 40, barColor
 		s = "000000" + player2.score
 		g.print s[-6:], x, 610, player2.tint, "large"
-		for i in range(3)
+		for i in range(4)
 			x = g.scrollX + 818 + 32*i
 			g.fillRect x, 611, 36, 32, barColor
 			if i < player2.powerups.len then

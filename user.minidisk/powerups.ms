@@ -68,7 +68,6 @@ end for
 // Pick a random powerup that isn't something both players
 // already have.
 pickAvailable = function
-	return Bounce
 	for tries in range(9)
 		choice = all.any
 		for p in players
