@@ -51,6 +51,6 @@ end function
 inputsForPlayer = function(playerNum)
 	result = new Inputs
 	result.playerNum = playerNum
-	result.dpadKeys = dpadKeys[playerNum]
+	result.dpadKeys = dpadKeys[playerNum == 2]
 	return result
 end function

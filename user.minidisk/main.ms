@@ -132,7 +132,7 @@ moveToNextRoom = function(playerPos, otherPlayer)
 	nextRoom.createWalls
 	nextRoom.createRobots curLevel
 	nextRoom.clearRobotsNearPlayer
-	nextRoom.createPowerup
+	if not roomManager.Room.chicken then nextRoom.createPowerup
 	nextRoom.prepareDoors playerPos
 	while oldRoom.x != targetX or oldRoom.y != targetY
 		delta = oldRoom.moveTowards(targetX, targetY)

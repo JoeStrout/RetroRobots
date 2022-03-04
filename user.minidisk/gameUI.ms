@@ -27,8 +27,9 @@ update = function
 	
 	// draw lives
 	totalLives = totalLivesLeft
-	x = g.scrollX + 480 - 6*16
-	g.fillRect x, 611, 6*32, 40, barColor
+	if totalLives > 12 then totalLives = 12  // draw no more than this
+	x = g.scrollX + 480 - 12*16
+	g.fillRect x, 611, 12*32, 40, barColor
 	if totalLives then
 		x = g.scrollX + 480 - totalLives*16
 		for i in range(0, totalLives-1)
@@ -43,7 +44,7 @@ update = function
 	s = "000000" + player.score
 	g.print s[-6:], x, 610, player.tint, "large"
 	for i in range(4)
-		x = g.scrollX + 110 - 32*i
+		x = g.scrollX + 110 - 30*i
 		g.fillRect x, 611, 36, 32, barColor
 		if i < player.powerups.len then
 			g.drawImage player.powerups[i].icon, x, 611, 36, 32
@@ -52,12 +53,12 @@ update = function
 	
 	// draw player 2 score
 	if player2 then
-		x = g.scrollX + 810 - 20*6
+		x = g.scrollX + 808 - 20*6
 		g.fillRect x, 611, 20*6, 40, barColor
 		s = "000000" + player2.score
 		g.print s[-6:], x, 610, player2.tint, "large"
 		for i in range(4)
-			x = g.scrollX + 818 + 32*i
+			x = g.scrollX + 808 + 30*i
 			g.fillRect x, 611, 36, 32, barColor
 			if i < player2.powerups.len then
 				g.drawImage player2.powerups[i].icon, x, 611, 36, 32
