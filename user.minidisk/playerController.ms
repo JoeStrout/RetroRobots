@@ -94,6 +94,7 @@ Player.addToScore = function(points)
 		sounds.Pickup.playAt self // ToDo: play extra-life sound
 	end if
 	self.score = self.score + points
+	//print "Added to score: " + points + " from " + stackTrace[1]
 	gameUI.update
 end function
 
@@ -226,6 +227,7 @@ Player.checkCollisions = function
 			if sp isa robotController.Robot then
 				if sp.isDead then continue
 				sp.explode
+				self.addToScore constants.pointsPerRobotDestroyed
 			end if
 			self.die
 			return

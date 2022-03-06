@@ -4,6 +4,7 @@
 import "mathUtil"
 import "listUtil"
 import "displays"; displays.init
+import "qa"
 import "constants"
 import "images"
 import "updatable"
@@ -251,3 +252,5 @@ end function
 
 gameLoop
 
+wait 2
+load "title"; run

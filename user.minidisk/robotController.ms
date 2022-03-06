@@ -60,9 +60,6 @@ Robot.die = function(room)
 		display(robotDisplayNum).sprites.removeVal self.armor
 	end if
 	room.robots.removeVal self
-	if room == curRoom and not curRoom.robots then
-		curRoom.awardRoomBonus
-	end if
 end function
 
 Robot.update = function(dt=0.0167)
@@ -162,6 +159,10 @@ Robot.explode = function
 	self.nextFrameTime = time
 	self.updateArmor
 	sounds.BotDie.playAt self
+	for r in curRoom.robots
+		if not r.isDead then return
+	end for
+	curRoom.awardRoomBonus
 end function
 
 Robot.startWalk = function
