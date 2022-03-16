@@ -14,7 +14,7 @@ import "playerController"
 import "shotController"
 import "evilBottoController"
 import "powerups"
-import "inputs"
+if not globals.hasIndex("inputs") then import "inputs"
 import "gameUI"
 import "sounds"
 

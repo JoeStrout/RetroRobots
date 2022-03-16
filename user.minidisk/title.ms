@@ -1,4 +1,5 @@
 import "textUtil"
+if not globals.hasIndex("inputs") then import "inputs"
 
 bigMapImg = file.loadImage("pics/Title.png")
 
@@ -173,7 +174,9 @@ end function
 
 btnSettings = Button.make("Settings", 550, 200, "s")
 btnSettings.action = function
-	textUtil.printCenteredAt 34, 0, "Not implemented yet."
+	import "setup"
+	setup.doSetup
+	run
 end function
 
 btnHelp = Button.make("HowToPlay", 550, 100, ["h", "?", "/"])

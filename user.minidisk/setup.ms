@@ -5,7 +5,9 @@ import "textUtil"
 import "listUtil"
 import "bmfFonts"
 import "events"
+if not globals.hasIndex("inputs") then import "inputs"
 
+allInputs = inputs.allInputs
 
 clear
 display(2).mode = displayMode.pixel
@@ -28,29 +30,10 @@ end function
 
 f = bmfFonts.Font.load("fonts/robocop+.bmf")
 
-// Function names: indexed by [functionNum]
-functions = ["Up", "Down", "Left", "Right", "Fire"]
-
-// Inputs: indexed by [functionNum][alternate]
-p1Inputs = [
-["w", "Joy1Axis1 -"],
-["s", "Joy1Axis1 +"],
-["a", "Joy1Axis0 -"],
-["d", "Joy1Axis0 -"],
-["space", "joystick 1 button 0"]]
-
-p2Inputs = [
-["up", "Joy2Axis1 -"],
-["down", "Joy2Axis1 +"],
-["left", "Joy2Axis0 -"],
-["right", "Joy2Axis0 -"],
-["right shift", "joystick 2 button 0"]]
-
-allInputs = [p1Inputs, p2Inputs]
 
 // Layout constants
 p1Top = 600
-p2Top = 300
+p2Top = 310
 rowHeight = 32; baseline = 8
 left = 100
 colWidth = [100, 300, 300]
@@ -121,7 +104,7 @@ getInputForFunction = function(playerNum, functionNum, alternate)
 	f.center "input for", x, y, 1, "#CCCCAA"
 	y = y - 50
 	
-	f.center functions[functionNum], x, y, 3
+	f.center inputs.functions[functionNum], x, y, 3
 	y = y - 60
 	f.center "(Esc to clear)", x, y, 1, "#CCCCAA"
 
@@ -232,32 +215,44 @@ makeButton = function(caption, left, bottom, width, height, bgColor="#444444", r
 	return btn
 end function
 
-for pnum in [0, 1]
-	y = allTops[pnum]
-	f.center "Player " + (pnum+1) + " Controls", 480, y, 2
-	y = y - 40
-	btn = makeButton("Primary Input", colLeft(1)+2, y+2, colWidth[1]-4, rowHeight-4, color.black)
-	btn.normalTint = color.silver; btn.pressedTint = color.gray; btn.tint = btn.normalTint
-	btn.playerNum = pnum; btn.alts = [0]; btn.funcs = range(0,4)
-	btn = makeButton("Alternate Input", colLeft(2)+2, y+2, colWidth[2]-4, rowHeight-4, color.black)
-	btn.normalTint = color.silver; btn.pressedTint = color.gray; btn.tint = btn.normalTint
-	btn.playerNum = pnum; btn.alts = [1]; btn.funcs = range(0,4)
-	y = y - rowHeight
-	inputs = allInputs[pnum]
-	for i in inputs.indexes
-		for col in range(0,2)
-			if col == 0 then
-				btn = makeButton(functions[i], left, y+2, colWidth[0]-4, rowHeight-4, color.black, true)
-				btn.playerNum = pnum; btn.alts = [0, 1]; btn.funcs = [i]
-			else
-				x = colLeft(col)
-				btn = makeButton(inputs[i][col-1], x+2, y+2, colWidth[col]-4, rowHeight-4)
-				btn.playerNum = pnum; btn.alts = [col-1]; btn.funcs = [i]
-			end if
-		end for
+doSetup = function
+	for pnum in [0, 1]
+		y = allTops[pnum]
+		f.center "Player " + (pnum+1) + " Controls", 480, y, 2
+		y = y - 40
+		btn = makeButton("Primary Input", colLeft(1)+2, y+2, colWidth[1]-4, rowHeight-4, color.black)
+		btn.normalTint = color.silver; btn.pressedTint = color.gray; btn.tint = btn.normalTint
+		btn.playerNum = pnum; btn.alts = [0]; btn.funcs = range(0,4)
+		btn = makeButton("Alternate Input", colLeft(2)+2, y+2, colWidth[2]-4, rowHeight-4, color.black)
+		btn.normalTint = color.silver; btn.pressedTint = color.gray; btn.tint = btn.normalTint
+		btn.playerNum = pnum; btn.alts = [1]; btn.funcs = range(0,4)
 		y = y - rowHeight
+		playerInps = allInputs[pnum]
+		for i in playerInps.indexes
+			for col in range(0,2)
+				if col == 0 then
+					btn = makeButton(inputs.functions[i], left, y+2, colWidth[0]-4, rowHeight-4, color.black, true)
+					btn.playerNum = pnum; btn.alts = [0, 1]; btn.funcs = [i]
+				else
+					x = colLeft(col)
+					btn = makeButton(playerInps[i][col-1], x+2, y+2, colWidth[col]-4, rowHeight-4)
+					btn.playerNum = pnum; btn.alts = [col-1]; btn.funcs = [i]
+				end if
+			end for
+			y = y - rowHeight
+		end for
 	end for
-end for
+	
+	f.center "Click any input, column header, or row header", 350, 50, 0.75, "#CCCCCC"
+	f.center "to change control mappings.  Click Done when done.", 350, 35, 0.75, "#CCCCCC"
+	btn = makeButton("DONE", 780, 28, 120, 40, "#5555AA")
+	eventLoop = events.eventLoop
+	btn.action = function
+		eventLoop.stop
+	end function
+	
+	eventLoop.run
+	clear
+end function
 
-
-events.eventLoop.run
+if locals == globals then doSetup
