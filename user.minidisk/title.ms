@@ -181,7 +181,8 @@ end function
 
 btnHelp = Button.make("HowToPlay", 550, 100, ["h", "?", "/"])
 btnHelp.action = function
-	textUtil.printCenteredAt 34, 0, "Not implemented yet."
+	import "instructions"	// actually does the whole shpiel
+	run
 end function
 
 

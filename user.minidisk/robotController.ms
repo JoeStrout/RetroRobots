@@ -114,6 +114,7 @@ end function
 
 Robot.act = function
 	// Either start walking towards the player, or shoot.
+	if curRoom == null then return
 	if rnd < 0.5 and self.level > 0 then self.fire else self.startWalk
 	
 	if self.level < 2 then
