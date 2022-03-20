@@ -70,11 +70,13 @@ if globals == locals then
 	player.livesLeft = 2
 	player.score = 12345
 	player.tint = "#FFFFCC"
+	player.powerups = []
 	
 	player2 = {}
 	player2.livesLeft = 1
 	player2.score = 2468
 	player2.tint = "#CCCCFF"
+	player2.powerups = []
 	
 	totalLivesLeft = 3
 	

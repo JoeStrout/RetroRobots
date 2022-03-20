@@ -3,8 +3,8 @@
 
 import "textUtil"
 import "listUtil"
-import "bmfFonts"
 import "events"
+if not globals.hasIndex("fonts") then import "fonts"
 if not globals.hasIndex("inputs") then import "inputs"
 
 allInputs = inputs.allInputs
@@ -18,18 +18,7 @@ display(7).mode = displayMode.pixel
 tempGfx = display(7)
 tempGfx.clear
 
-bmfFonts.Font.center = function(s, midX=480, y=320, scale=1, tint="#FFFFFF")
-	x = midX - self.width(s, scale)/2
-	self.print s, x, y, scale, tint
-end function
-
-bmfFonts.Font.rightAlign = function(s, rightX=480, y=320, scale=1)
-	x = rightX - self.width(s, scale)
-	self.print s, x, y, scale
-end function
-
-f = bmfFonts.Font.load("fonts/robocop+.bmf")
-
+f = font
 
 // Layout constants
 p1Top = 600
@@ -107,7 +96,7 @@ getInputForFunction = function(playerNum, functionNum, alternate)
 	f.center inputs.functions[functionNum], x, y, 3
 	y = y - 60
 	f.center "(Esc to clear)", x, y, 1, "#CCCCAA"
-
+	
 	newKey = waitForAny
 	if newKey == "escape" then newKey = ""
 	allInputs[playerNum][functionNum][alternate] = newKey

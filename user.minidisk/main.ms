@@ -93,7 +93,7 @@ moveToNextRoom = function(playerPos, otherPlayer)
 	else
 		dirY = -1
 	end if
-
+	
 	if otherPlayer then
 		if otherPlayer.dying or otherPlayer.dead then
 			if totalLivesLeft < 1 then
@@ -123,7 +123,7 @@ moveToNextRoom = function(playerPos, otherPlayer)
 		end if
 	end if
 	gameUI.update
-
+	
 	targetX = curRoom.x + roomManager.kWidth * dirX
 	targetY = curRoom.y + roomManager.kHeight * dirY
 	oldRoom = curRoom
