@@ -1,14 +1,21 @@
 import "textUtil"
+import "mathUtil"
+
 if not globals.hasIndex("inputs") then import "inputs"
 
-bigMapImg = file.loadImage("pics/Title.png")
-
 clear
+if globals.hasIndex("bgm") and bgm != null then
+	bgm.adjust 0.75
+else
+	bgm = file.loadSound("music/bgm.ogg")
+	bgm.play 0.75
+end if
 
 //======================================================================
 // Rotating Title Globe
 //======================================================================
 
+bigMapImg = file.loadImage("pics/Title.png")
 sprites = display(4).sprites
 globeSprites = []
 sections = 12
@@ -144,6 +151,12 @@ end function
 //======================================================================
 
 startGame = function(numPlayers=1)
+	for i in range(0,60)
+		bgm.adjust mathUtil.lerp(0.75, 0, i/60)
+		yield
+	end for
+	bgm.stop; globals.bgm = null
+	
 	file.loadSound("sounds/VoiceIntruderAlert.wav").play
 	display(1).mode = displayMode.solidColor
 	for t in range(0, 1, 0.025)
@@ -174,6 +187,7 @@ end function
 
 btnSettings = Button.make("Settings", 550, 200, "s")
 btnSettings.action = function
+	bgm.adjust 0.5
 	import "setup"
 	setup.doSetup
 	run
@@ -181,6 +195,7 @@ end function
 
 btnHelp = Button.make("HowToPlay", 550, 100, ["h", "?", "/"])
 btnHelp.action = function
+	bgm.adjust 0.5
 	import "instructions"	// actually does the whole shpiel
 	run
 end function
