@@ -1,6 +1,6 @@
 // This module defines the display types and numbers.
 
-floorLayer = 6
+floorLayer = 7
 actionLayer = 5
 wallLayer = 4
 overlayGfxLayer = 2
