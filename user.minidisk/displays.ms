@@ -27,12 +27,21 @@ init = function()
 	
 	display(overlayGfxLayer).mode = displayMode.pixel
 	outer.overlayGfx = display(overlayGfxLayer)
+	overlayGfx.clear
 	
 end function
 
 shiftFloor = function(dx, dy)
 	floor.scrollX = (floor.scrollX - dx + 512) % 128
 	floor.scrollY = (floor.scrollY - dy + 512) % 128
+end function
+
+darken = function
+	for disp in [action, wall]
+		for sprite in disp.sprites
+			sprite.tint = color.lerp(sprite.tint, color.black, 0.5)
+		end for
+	end for
 end function
 
 if locals == globals then init

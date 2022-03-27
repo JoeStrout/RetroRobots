@@ -4,8 +4,9 @@ if not globals.hasIndex("mathUtil") then import "mathUtil"
 if not globals.hasIndex("listUtil") then import "listUtil"
 if not globals.hasIndex("images") then import "images"
 if not globals.hasIndex("updatable") then import "updatable"
+if not globals.hasIndex("displays") then import "displays"
 
-robotDisplayNum = 4
+robotDisplayNum = displays.actionLayer
 
 levelColors = ["#7FFF7F","#88AAFF","#CCCC33","#990000","#990000"]
 

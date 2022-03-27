@@ -45,7 +45,7 @@ end function
 painterX = [0,0]
 painterY = [0,0]
 
-// Walls: indexet by column, row, and horizontal(1) vs vertical(0);
+// Walls: indexed by column, row, and horizontal(1) vs vertical(0);
 // value is 1 for a wall, 0 for no wall
 kCols = 5
 kRows = 3

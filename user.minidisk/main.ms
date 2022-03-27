@@ -17,6 +17,7 @@ import "powerups"
 if not globals.hasIndex("inputs") then import "inputs"
 import "gameUI"
 import "sounds"
+import "highScores"
 
 sounds.loadAll
 
@@ -251,6 +252,14 @@ gameLoop = function
 end function
 
 gameLoop
+
+for pl in players
+	if highScores.isHighScore(pl.score) then
+		name = highScores.postNewScoreDialog(pl.tint)
+		highScores.addScore pl.score, name
+	end if
+	highScores.showScoresTillKeypress
+end for
 
 wait 2
 load "title"; run
