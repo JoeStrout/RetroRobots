@@ -2,6 +2,7 @@
 // dialog, and the display of all the high scores.
 
 import "textUtil"
+
 if not globals.hasIndex("displays") then
 	import "displays"
 	displays.init
@@ -22,19 +23,10 @@ g = function
 	return _g
 end function
 
-Score = {}
-Score.points = 0
-Score.name = ""
-
 scores = []
 
-isHighScore = function(newScore)
-	if not scores then return true
-	return (newScore > scores[-1].points)
-end function
-
 addScore = function(points, name)
-	sc = new Score
+	sc = {}
 	sc.points = points
 	sc.name = name
 	scores.push sc
@@ -42,7 +34,8 @@ addScore = function(points, name)
 	if scores.len > 10 then outer.scores = scores[:10]
 end function
 
-if not scores then
+resetScores = function
+	outer.scores = []
 	addScore 10000, "BBJ"
 	addScore 9500, "MOO"
 	addScore 900, "LEE"
@@ -53,7 +46,42 @@ if not scores then
 	addScore 650, "WHO"
 	addScore 600, "TRU"
 	addScore 550, "WUT"
-end if
+end function
+
+scoresFilePath = function
+	if not file.exists("/usr/data") then
+		file.makedir "/usr/data"
+	end if
+	return "/usr/data/highscores.dat"
+end function
+
+saveScores = function
+	lines = []
+	for score in scores
+		lines.push score.points + ":" + score.name
+	end for
+	file.writeLines scoresFilePath, lines
+end function
+
+loadScores = function
+	scoreData = file.readLines(scoresFilePath)
+	if scoreData then
+		for line in scoreData
+			fields = line.split(":", 2)
+			if fields.len < 2 then continue
+			addScore fields[0].val, fields[1]
+		end for
+	else
+		resetScores
+	end if
+end function
+
+loadScores
+
+isHighScore = function(newScore)
+	if not scores then return true
+	return (newScore > scores[-1].points)
+end function
 
 textForRow = function(row)
 	s = str(row+1)
@@ -185,21 +213,21 @@ postNewScoreDialog = function(tint="#FFFFFF")
 	return initials
 end function
 
+nextTime = 0
+curRow = -1
+
 update = function
-	curRow = -1
-	nextTime = 0
-	while true
-		if time > nextTime then
-			curRow = (curRow + 1) % 10
-			highlight curRow
-			nextTime = time + 0.2 // + 1.8*(curRow==0)
-		end if
-		yield
-	end while
+	if time > nextTime then
+		outer.curRow = (curRow + 1) % 10
+		highlight curRow
+		outer.nextTime = time + 0.2 // + 1.8*(curRow==0)
+	end if
+	yield
 end function
 
 showScoresTillKeypress = function
 	showScores
+	key.clear
 	while not key.available
 		update
 	end while

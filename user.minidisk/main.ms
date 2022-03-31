@@ -257,9 +257,15 @@ for pl in players
 	if highScores.isHighScore(pl.score) then
 		name = highScores.postNewScoreDialog(pl.tint)
 		highScores.addScore pl.score, name
+		highScores.saveScores
 	end if
 	highScores.showScoresTillKeypress
 end for
 
-wait 2
-load "title"; run
+sneakyLoadAndRun = function(path)
+	text.color = color.clear
+	load path
+	text.color = color.silver
+	run
+end function
+sneakyLoadAndRun "title"

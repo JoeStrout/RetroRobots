@@ -5,15 +5,18 @@ if not globals.hasIndex("images") then import "images"
 if not globals.hasIndex("robotController") then import "robotController"
 if not globals.hasIndex("shotController") then import "shotController"
 if not globals.hasIndex("evilBottoController") then import "evilBottoController"
+if not globals.hasIndex("displays") then import "displays"
 
 if not globals.hasIndex("robofont") then
 	import "bmfFonts"
 	robofont = bmfFonts.Font.load("fonts/robocop+.bmf")
 end if
 
-clear
+displays.init
 display(2).mode = displayMode.pixel
-xdisp = display(2)
+globals.gfx = display(2)
+display(1).mode = displayMode.pixel
+xdisp = display(1)
 xdisp.clear color.clear
 
 updateables = []

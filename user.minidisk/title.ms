@@ -11,6 +11,13 @@ else
 	bgm.play 0.75
 end if
 
+sneakyLoadAndRun = function(path)
+	text.color = color.clear
+	load path
+	text.color = color.silver
+	run
+end function
+
 //======================================================================
 // Rotating Title Globe
 //======================================================================
@@ -167,7 +174,7 @@ startGame = function(numPlayers=1)
 		if display(dispNum).mode > 1 then display(dispNum).clear
 	end for	
 	globals.numPlayers = numPlayers
-	load "main"; run
+	sneakyLoadAndRun "main"
 end function
 
 //======================================================================
