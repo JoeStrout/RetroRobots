@@ -228,22 +228,14 @@ end function
 
 gameOver = false
 gameLoop = function
-	fpsStartTime = time
-	fpsFrameCount = 0
 	while not gameOver
-		fpsFrameCount = fpsFrameCount + 1
-		if time > fpsStartTime + 1 then
-			//text.row=1; text.column=60; print fpsFrameCount+"   "
-			fpsFrameCount = 0
-			fpsStartTime = time
-		end if
 		yield
 		updatable.update
 		if botto.active then
 			botto.update
 		else if bottoAppearTime and time > bottoAppearTime then
 			botto.activate
-			bottoAppearTime = 0		
+			outer.bottoAppearTime = 0		
 		end if
 		checkRoomExit
 		checkGameOver

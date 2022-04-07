@@ -4,6 +4,7 @@ if not globals.hasIndex("mathUtil") then import "mathUtil"
 if not globals.hasIndex("listUtil") then import "listUtil"
 if not globals.hasIndex("images") then import "images"
 if not globals.hasIndex("updatable") then import "updatable"
+if not globals.hasIndex("particles") then import "particles"
 
 bottoDisplayNum = 4
 
@@ -39,7 +40,7 @@ Botto.deactivate = function
 end function
 
 Botto.explode = function
-	// ToDo: explosion animation
+	particles.makeBurst self
 	sounds.BottoDie.playAt self
 	self.deactivate
 end function

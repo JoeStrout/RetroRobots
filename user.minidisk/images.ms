@@ -43,6 +43,8 @@ armorBoom = []
 armorBoom.push spriteSheet.getImage(148, 53, 48, 35)
 armorBoom.push spriteSheet.getImage(196, 53, 48, 35)
 
+debris = spriteSheet.getImage(159, 62, 12, 10)
+
 powerup = []
 powerup.push spriteSheet.getImage(427, 32*2, 36, 32)
 powerup.push spriteSheet.getImage(427, 32*1, 36, 32)
